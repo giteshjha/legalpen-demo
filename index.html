@@ -137,8 +137,17 @@
   .seg button.on{background:var(--card); color:var(--ink); box-shadow:var(--shadow)}
   .field{margin-bottom:14px}
   .field label{display:block; font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:5px}
-  .field input[type=text], .field input[type=tel], .field input[type=date], .field select{
+  .field input[type=text], .field input[type=tel], .field input[type=date], .field select, .field textarea{
     width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:9px; background:var(--card); font-size:15px}
+  .field textarea{font:inherit; color:var(--ink); resize:vertical; line-height:1.45}
+  /* always within reach, never in the way */
+  .fbtn{position:fixed; z-index:28; bottom:calc(80px + env(safe-area-inset-bottom));
+    left:50%; transform:translateX(-50%); background:var(--card); border:1px solid var(--line);
+    box-shadow:var(--shadow); color:var(--ink-soft); font-size:12.5px; font-weight:650;
+    padding:7px 14px; border-radius:20px}
+  .fbtn:active{background:var(--chip)}
+  @media (min-width:1000px){ .fbtn{bottom:20px; left:auto; right:max(16px, calc(50% - 380px)); transform:none} }
+  @media (min-width:1180px){ .fbtn{right:auto; left:max(8px, calc(50% - 596px)); width:196px; text-align:center} }
   .opts{display:flex; flex-wrap:wrap; gap:8px}
   .opt{border:1.5px solid var(--line); border-radius:20px; padding:8px 14px; font-size:13.5px; font-weight:600; background:var(--card)}
   .opt.on{border-color:var(--accent); background:var(--accent-soft); color:var(--accent)}
@@ -249,6 +258,7 @@
   <div id="screen"></div>
   <nav class="tabbar" id="tabbar"></nav>
 </div>
+<button class="fbtn" data-act="feedback">Something not right? Tell us</button>
 <aside class="lrail" id="lrail" aria-label="The day"></aside>
 <aside class="rail" id="rail" aria-label="Standing panel"></aside>
 <div id="toast" role="status"></div>
@@ -289,6 +299,13 @@ function urgency(s){ const n = daysUntil(s); return n <= 1 ? 'now' : n <= 7 ? 's
 let toastT;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 2400); }
 const uid = p => p + Math.random().toString(36).slice(2, 9);
+
+/* ---- where feedback goes. Put the WhatsApp number here in full international form,
+   digits only, e.g. '919811022331'. Left empty, the button copies the note to the
+   clipboard instead of opening WhatsApp, so it still works. ---- */
+const FEEDBACK_WA = '';
+const SCREEN_NAME = { day:'Today', week:'This week', matters:'Matters', matter:'a matter folder',
+  close:'Close the day', party:'a party page', newmatter:'New matter', bundle:'Filing bundle' };
 
 /* ---- court calendar: a deadline that lands on a closed day is not really that day (s.4) ---- */
 const HOLIDAYS = {
@@ -1994,22 +2011,36 @@ function vSheet(){
   }
   if(sheet.kind === 'about'){
     return '<div class="sheet-veil" data-act="sheet-x"><div class="sheet" data-stop="1">' +
-      '<h3>About this prototype</h3>' +
-      '<p style="font-size:14px; margin-bottom:8px">A working sketch of LegalPen’s organisation roadmap — the matter folder, the case diary with its five-minute close, dates born from records, papers with labels, boards, party pages, conflict check and the filing bundle.</p>' +
-      '<p style="font-size:14px; margin-bottom:8px">Everything is demo data for a fictional Delhi practice, built around today’s date. It lives only in this browser. <b>What you record is kept across days</b> — that is deliberate: the habit this product bets on only shows itself over a week, not in one sitting.</p>' +
-      '<p style="font-size:14px; margin-bottom:10px">Try: <b>Close the day</b> from Today and offer a date in another court complex; record a loss on <b>Bhasin v. Suresh Kumar</b> and watch which appeal window it gives you; open <b>Batra v. Chawla</b> to see a clock already running; filter any Papers tab to <b>Orders</b>; search “wagle” under Matters.</p>' +
-      '<div class="divider"></div>' +
-      '<h3 style="font-size:14px">What this prototype deliberately does not decide</h3>' +
-      '<ul style="font-size:13.5px; margin:0 0 12px 18px; color:var(--ink-soft)">' +
-      '<li style="margin-bottom:5px"><b>Who holds the pen.</b> In most district practices the munshi writes the diary. If the clerk cannot record, the lawyer becomes the data-entry clerk at the exact moment that decides adoption. A clerk login is not “multi-lawyer sharing”.</li>' +
-      '<li style="margin-bottom:5px"><b>How a warning reaches you when the app is shut.</b> Everything here needs someone to open a screen. Push, SMS or WhatsApp is a real choice with real cost, and it decides the platform.</li>' +
-      '<li style="margin-bottom:5px"><b>Whether capture works with no signal.</b> Court basements have none. This file happens to work offline; a server-backed app will not, unless it is designed to.</li>' +
-      '<li style="margin-bottom:5px"><b>Whether the court’s own cause list is imported.</b> The app now carries the CNR and records your check against the list — it does not fetch it. Until it does, the court’s list stays the authority and this is your record of having read it.</li>' +
-      '<li style="margin-bottom:5px"><b>Money.</b> The paper diary’s back pages hold “received ₹5,000, 14.3”. If that stays on paper, the paper diary survives — worth checking against the real diary before ruling fees out.</li>' +
-      '<li><b>Files themselves.</b> Papers here are labels only; the real app attaches the document at the same moment.</li>' +
+      '<h3>A diary that keeps itself</h3>' +
+      '<p style="font-size:14px; margin-bottom:8px">This is a working sketch of a practice organiser for a single litigation lawyer. You write a hearing down once, the way it actually happened — the date, what the court did, the next date — and the app works out the rest: tomorrow’s board, the dates you cannot miss, the case history, the papers.</p>' +
+      '<p style="font-size:14px; margin-bottom:8px">Everything in it is invented — a fictional Delhi practice, dated around today so it looks like a live week. It runs entirely inside this browser: no account, no server, and nothing you type leaves your phone.</p>' +
+      '<p style="font-size:14px; margin-bottom:12px">Have a look at these first:</p>' +
+      '<ul style="font-size:13.5px; margin:0 0 14px 18px; color:var(--ink-soft)">' +
+      '<li style="margin-bottom:5px"><b>Close the day.</b> Record this morning’s hearings the way you would at 7pm, and offer a next date that is already busy.</li>' +
+      '<li style="margin-bottom:5px"><b>Tomorrow’s board.</b> Then see what the entries you just made did to it.</li>' +
+      '<li><b>Open any file.</b> Its dates, its papers, and the story of the case so far — none of it typed separately.</li>' +
       '</ul>' +
-      '<button class="btn" data-act="sheet-close">Start using it</button>' +
+      '<div class="divider"></div>' +
+      '<p style="font-size:14px; margin-bottom:10px"><b>Please tell us where it is wrong.</b> Vocabulary that does not match your courts, a step that is not how it really happens, something missing that you would need on a Tuesday morning — that is exactly what we are looking for.</p>' +
+      '<button class="btn" data-act="feedback">Tell us what you think</button>' +
+      '<button class="btn ghost" data-act="sheet-close" style="margin-top:8px">Start looking around</button>' +
       '<button class="btn quiet" data-act="reset" style="margin-top:8px">Reset to a fresh demo day</button>' +
+      '</div></div>';
+  }
+  if(sheet.kind === 'feedback'){
+    const f = sheet.f;
+    const where = SCREEN_NAME[sheet.from] || 'the app';
+    return '<div class="sheet-veil" data-act="sheet-x"><div class="sheet" data-stop="1">' +
+      '<h3>What isn’t right?</h3>' +
+      '<p class="note" style="margin-top:0">Write it the way you would say it. Half a sentence is enough — “no code for part-heard”, “our court gives dates by hand”, “I would never have my phone out at the dais”.</p>' +
+      '<div class="field"><label>Your note</label>' +
+      '<textarea id="fb-note" rows="5" placeholder="What did not match how your practice actually runs?">' + esc(f.note || '') + '</textarea></div>' +
+      '<div class="field"><label>Who you are (so we can call you back)</label>' +
+      '<input type="text" id="fb-who" placeholder="Name, and where you practise" value="' + esc(f.who || '') + '"></div>' +
+      '<p class="note">We will send along which screen you were on (' + esc(where) + ') so the note makes sense to us. Nothing else about your use is included.</p>' +
+      '<button class="btn" data-act="fb-send" ' + ((f.note || '').trim() ? '' : 'disabled') + '>' +
+        (FEEDBACK_WA ? 'Send on WhatsApp' : 'Copy the note') + '</button>' +
+      '<button class="btn quiet" style="margin-top:8px" data-act="sheet-close">Not now</button>' +
       '</div></div>';
   }
   return '';
@@ -2035,6 +2066,19 @@ document.addEventListener('click', e => {
     case 'tab': { const r = el.dataset.r; go(r === 'day' ? {name:'day', date: todayISO()} : {name:r}); break; }
     case 'back': history.length > 1 ? history.back() : go({name:'day', date: todayISO()}); return;
     case 'about': sheet = {kind:'about'}; paintSheet(); break;
+    case 'feedback': sheet = {kind:'feedback', from: route.name, f:{}}; paintSheet(); break;
+    case 'fb-send': { const f = sheet.f;
+      const note = (f.note || '').trim(); if(!note) break;
+      const where = SCREEN_NAME[sheet.from] || 'the app';
+      const txt = 'LegalPen demo — feedback\n\n' + note + '\n\n(on ' + where + (f.who ? '; from ' + f.who.trim() : '') + ')';
+      if(FEEDBACK_WA){
+        window.open('https://wa.me/' + FEEDBACK_WA + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+        sheet = null; paintSheet(); toast('Thank you — WhatsApp will open with it ready to send');
+      } else if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(() => { sheet = null; paintSheet();
+          toast('Copied — paste it to us on WhatsApp'); }, () => toast(txt));
+      } else { toast(txt); }
+      break; }
     case 'reset': try{ localStorage.removeItem('legalpen-proto'); }catch(err){} S = seed(); S.seedDay = todayISO(); S.aboutSeen = true; save(); sheet = null; closeQ = null; paintSheet(); toast('Demo data reset'); go({name:'day', date: todayISO()}); break;
     case 'date': go({name:'day', date: el.dataset.d}); break;
     case 'goto-day': go({name:'day', date: el.dataset.d}); break;
@@ -2282,6 +2326,10 @@ document.addEventListener('input', e => {
   if(id === 'n-court'){ newMatter.court = e.target.value; }
   if(id === 'ap-label' && sheet){ sheet.f.label = e.target.value; }
   if(id === 'ap-pages' && sheet){ sheet.f.pages = e.target.value; }
+  if(id === 'fb-note' && sheet){ const was = !!(sheet.f.note || '').trim(); sheet.f.note = e.target.value;
+    if(was !== !!e.target.value.trim()){ const b = document.querySelector('[data-act="fb-send"]');
+      if(b) e.target.value.trim() ? b.removeAttribute('disabled') : b.setAttribute('disabled',''); } }
+  if(id === 'fb-who' && sheet){ sheet.f.who = e.target.value; }
   if(id === 'dh-detail' && sheet){ sheet.f.detail = e.target.value; }
   if(id === 'dh-witness' && sheet){ sheet.f.witness = e.target.value; }
   if(id === 'f-detail'){ closeQ.form.detail = e.target.value; }
