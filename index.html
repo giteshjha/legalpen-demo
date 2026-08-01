@@ -401,6 +401,7 @@ const MATTERS=[
 {id:'m1',title:'Gupta v. Gupta',caseNo:'CS 214/2024',cnr:'DLCT01-004521-2024',
  kind:'Partition suit',court:'Tis Hazari (Civil Judge-02)',complex:'Tis Hazari',
  client:['p1'],opp:['p2'],filedOn:'2024-09-12',side:'we act for the plaintiff',
+ facts:'Ancestral house at Plot 14, Shakti Nagar; partition sought between two brothers after the father died intestate in 2023.',
  fees:[{on:'2024-09-12',amt:40000,note:'on filing'},{on:'2026-07-15',amt:15000,note:'towards evidence stage'}],
  hearings:[
   {on:'2025-11-18',purpose:'Written statement',outcome:{code:'adj_their',label:'Adjourned — their request',detail:'defendant sought time for WS'},next:{on:'2026-06-17',purpose:'Replication'}},
@@ -422,6 +423,7 @@ const MATTERS=[
 {id:'m2',title:'Sharma Traders v. Malhotra',caseNo:'CC 87/2025',cnr:'DLDW02-001873-2025',
  kind:'Complaint u/s 138 NI Act',court:'Dwarka (MM, NI Act-05)',complex:'Dwarka',
  client:['p3'],opp:['p4'],filedOn:'2025-03-04',side:'we act for the complainant',
+ facts:'Cheque of ₹3.2 lakh for sanitaryware supplied returned “funds insufficient”; notice served, no payment within 15 days.',
  fees:[{on:'2025-03-04',amt:25000,note:'on filing'}],
  hearings:[
   {on:'2026-05-06',purpose:'Notice u/s 251',outcome:{code:'order',label:'Order passed',detail:'notice framed; accused pleads not guilty'},next:{on:'2026-07-08',purpose:'Complainant’s evidence (CW-1)'}},
@@ -439,6 +441,7 @@ const MATTERS=[
 {id:'m3',title:'Kishori Lal v. Narain Builders LLP',caseNo:'EP 12/2023',cnr:'DLCT01-009214-2023',
  kind:'Execution of money decree (₹8.2 lakh)',court:'Karkardooma (ADJ-04)',complex:'Karkardooma',
  client:['p5'],opp:['p6'],filedOn:'2023-08-30',side:'we act for the decree-holder',
+ facts:'Money decree of ₹8.2 lakh (Tis Hazari, May 2023) against the builder remains unsatisfied; execution by attachment of bank accounts.',
  hearings:[
   {on:'2026-05-27',purpose:'Attachment',outcome:{code:'order',label:'Order passed',detail:'warrants of attachment of JD’s bank account issued'},next:{on:'2026-07-27',purpose:'Objections of JD (O. XXI)'}},
   {on:'2026-07-27',purpose:'Objections of JD (O. XXI)',outcome:{code:'adj_nr',label:'Adjourned — not reached'},next:{on:'2026-08-19',purpose:'Objections of JD (O. XXI)'}},
@@ -454,6 +457,7 @@ const MATTERS=[
 {id:'m4',title:'Kapoor v. Kapoor',caseNo:'MC 219/2025',cnr:'DLSK03-002218-2025',
  kind:'Maintenance u/s 144 BNSS',court:'Saket (Family Court-01)',complex:'Saket',
  client:['p7'],opp:['p8'],filedOn:'2025-07-19',side:'we act for the petitioner',
+ facts:'Petitioner out of the matrimonial home since Jan 2025 with the minor son; no maintenance paid since.',
  fees:[{on:'2025-07-19',amt:20000,note:'on filing'}],
  hearings:[
   {on:'2026-07-22',purpose:'Reply of respondent',outcome:{code:'adj_their',label:'Adjourned — their request',detail:'respondent sought time for reply'},next:{on:'2026-08-19',purpose:'Reply & interim maintenance',presence:{who:'client',name:'Meena Kapoor'}}},
@@ -471,6 +475,7 @@ const MATTERS=[
 {id:'m5',title:'Prakash Chand v. DDA',caseNo:'WP (C) 4567/2025',cnr:'DLHC01-118820-2025',
  kind:'Writ — demolition of rear portion',court:'Delhi High Court (Court 14)',complex:'Delhi High Court',
  client:['p9'],opp:['p10'],filedOn:'2025-11-03',side:'we act for the petitioner',
+ facts:'Rear portion of the house marked for demolition as “unauthorised”; petitioner holds the sanctioned plan of 1998.',
  protections:[{label:'Demolition stayed',mode:'till-next-date',born:'order dt. 30.04.2026'}],
  hearings:[
   {on:'2026-04-30',purpose:'Preliminary hearing',outcome:{code:'order',label:'Order passed',detail:'notice issued; demolition stayed till the next date'},next:{on:'2026-08-19',purpose:'Counter-affidavit of DDA'}},
@@ -480,6 +485,8 @@ const MATTERS=[
  ],
  papers:[
   {kind:'Pleading',label:'Writ petition with annexures',dt:'2025-11-03',pages:48,side:'us'},
+  {kind:'Annexure',label:'Annexure P-1 — Sanctioned building plan of 1998',dt:'2025-11-03',pages:4,side:'us'},
+  {kind:'Annexure',label:'Annexure P-2 — Site photographs with index',dt:'2025-11-03',pages:6,side:'us'},
   {kind:'Order',label:'Order dt. 30.04.2026 (stay of demolition)',dt:'2026-04-30',pages:2,side:'court'},
   {kind:'Notice',label:'Demolition notice dt. 12.10.2025',dt:'2025-10-12',pages:2,side:'them'},
  ]},
@@ -487,6 +494,7 @@ const MATTERS=[
 {id:'m6',title:'Bhasin v. Chandna',caseNo:'CS 88/2024',cnr:'DLSK02-001108-2024',
  kind:'Recovery suit (₹6.4 lakh)',court:'Saket (Civil Judge-06)',complex:'Saket',
  client:['p11'],opp:['p12'],filedOn:'2024-04-22',side:'we acted for the plaintiff',
+ facts:'Friendly loan of ₹6.4 lakh for a showroom advance; repayment denied; suit dismissed for want of written acknowledgement.',
  outcome:{result:'lost',label:'Suit dismissed',judgmentOn:'2026-08-07',recordedOn:'2026-08-10',
   appeal:{forum:'District Judge, Saket',basis:'Art. 116(b), Limitation Act 1963 — 30 days',
    windowDays:30,decision:'undecided'}},
@@ -505,6 +513,7 @@ const MATTERS=[
 {id:'m7',title:'Gulshan Arora v. Skyline Infra LLP',caseNo:null,cnr:null,
  kind:'Recovery of ₹11.8 lakh advance — consultation',court:null,complex:null,
  client:['p13'],opp:['p14'],filedOn:null,consultedOn:'2026-08-11',side:'pre-filing',
+ facts:'₹11.8 lakh advanced for a Dwarka flat never allotted; the builder issued receipts, then went silent.',
  limitation:{state:'unknown',label:'Limitation not worked out yet',
   basis:'money claim; payments and acknowledgements between Feb 2023 and Mar 2024 — fix the article and the last date before anything else'},
  hearings:[],
@@ -516,6 +525,7 @@ const MATTERS=[
 {id:'m8',title:'Suresh Kumar v. Narain Builders LLP',caseNo:null,cnr:null,
  kind:'Dishonoured cheque of ₹4.6 lakh — notice stage',court:null,complex:null,
  client:['p15'],opp:['p6'],filedOn:null,consultedOn:'2026-07-10',side:'pre-filing',
+ facts:'Cheque of ₹4.6 lakh toward refund of a booking advance returned unpaid; statutory notice served on the builder.',
  fees:[{on:'2026-07-10',amt:5000,note:'consultation & statutory notice'}],
  limitation:{state:'stated',label:'File the s.138 complaint',by:'2026-09-08',
   basis:'notice despatched 21.07 (within 30 days of return memo dt. 08.07); served 24.07; 15 days ran out 08.08; one month from the cause — s.142(1)(b) NI Act',
@@ -528,8 +538,10 @@ const MATTERS=[
  ]},
 
 {id:'m9',title:'In re: Guardianship of Master Arjun Pal',caseNo:'GP 14/2026',cnr:'DLCT05-000914-2026',
- kind:'Guardianship petition — we act for the objecting uncle',court:'Tis Hazari (Guardianship Judge)',complex:'Tis Hazari',
+ kind:'Guardianship petition',court:'Tis Hazari (Guardianship Judge)',complex:'Tis Hazari',
  client:['p16'],opp:['p17'],filedOn:'2026-07-06',side:'we act for the respondent',
+ roles:['respondent','petitioner'],
+ facts:'Guardianship of the late brother’s minor son’s property sought by one uncle; our client objects, citing the father’s will.',
  hearings:[
   {on:'2026-08-03',purpose:'Appearance',outcome:{code:'order',label:'Order passed',detail:'reply within two weeks'},next:{on:'2026-09-02',purpose:'Reply & arguments'},
    directions:[{what:'Reply to the guardianship application',who:'us',by:'2026-08-17',cost:'still fileable — go with an application explaining the delay'}]},
@@ -541,6 +553,7 @@ const MATTERS=[
 {id:'m10',title:'Batra v. Chawla',caseNo:'Diary No. 104729/2026',cnr:null,
  kind:'First appeal against money decree — under registry objections',court:'Delhi High Court (Registry)',complex:'Delhi High Court',
  client:['p18'],opp:['p19'],filedOn:'2026-08-11',side:'we act for the appellant',
+ facts:'Trial court decreed ₹5.1 lakh against the appellant on a disputed promissory note; first appeal on consideration and limitation.',
  note:'The RFA number comes on registration, once objections are cured.',
  hearings:[],
  refile:{what:'Cure registry objections & refile',by:'2026-08-21',
@@ -550,6 +563,7 @@ const MATTERS=[
   {kind:'Certified copy',label:'Certified copy of impugned judgment dt. 15.06.2026',dt:'2026-07-02',pages:16,side:'court'},
   {kind:'Order',label:'Decree of the trial court (copy)',dt:'2026-07-02',pages:3,side:'court'},
   {kind:'Pleading',label:'Application for stay of execution',dt:'2026-08-11',pages:6,side:'us'},
+  {kind:'Annexure',label:'Annexure A-1 — Relevant record of the trial court',dt:'2026-08-11',pages:40,side:'us'},
   {kind:'Client paper',label:'Court-fee challan (deficit to be made good)',dt:'2026-08-11',pages:2,side:'us'},
   {kind:'Registry objection',label:'Registry objection memo dt. 14.08.2026',dt:'2026-08-14',pages:1,side:'court'},
  ]},
@@ -664,7 +678,19 @@ const OUT_ALL=Object.fromEntries(OUT_PRIMARY.concat(OUT_MORE));
 const OUT_RED={warrant:1,dind:1,exparte:1};
 const PURP_PRIMARY=['Appearance','Written statement','Reply','Replication','Framing of issues','Evidence','Cross-examination','Final arguments'];
 const PURP_MORE=['Admission / denial','Arguments on application','Notice / summons','Service report','Mediation','Compliance','Objections','Orders / clarification','Statement u/s 351 BNSS','Judgment'];
-const PAPER_KINDS=['Order','Pleading','Evidence','Notice','Client paper','Copy application','Certified copy','Registry objection','Bundle','Other'];
+const PAPER_KINDS=['Order','Pleading','Annexure','Evidence','Notice','Client paper','Copy application','Certified copy','Registry objection','Bundle','Other'];
+function roleFor(m){
+  if(m.roles)return m.roles;
+  if(!m.filedOn||m.title.startsWith('In re'))return null;
+  const c=m.caseNo||'';
+  if(c.startsWith('CS'))return['plaintiff','defendant'];
+  if(c.startsWith('CC'))return['complainant','accused'];
+  if(c.startsWith('EP'))return['decree-holder','judgment-debtor'];
+  if(c.startsWith('MACT'))return['claimant','respondent'];
+  if(c.startsWith('RFA')||c.startsWith('Diary'))return['appellant','respondent'];
+  if(c.startsWith('Bail'))return['petitioner','State'];
+  return['petitioner','respondent'];
+}
 const COMPLEXES=['Tis Hazari','Karkardooma','Saket','Dwarka','Rohini','Delhi High Court','DRT','Other'];
 const APPEAL_FORUMS=[
  ['District Judge',30,'Art. 116(b), Limitation Act 1963 — 30 days'],
@@ -1226,6 +1252,8 @@ function vNew(){
    +'<div class="f-sec"><span class="lbl">Opposing party</span>'
    +'<input class="tin" id="n-opp" placeholder="Full name — checked against every file, both roles" value="'+esc(N.opp)+'" autocomplete="off">'
    +'<div id="n-opp-conf">'+conflictHTML(N.opp)+'</div></div>'
+   +'<div class="f-sec"><span class="lbl">Brief facts <i style="text-transform:none;letter-spacing:0;font-style:normal">(optional)</i></span>'
+   +'<input class="tin" id="n-facts" placeholder="One line — what this matter is about" value="'+esc(N.facts||'')+'"></div>'
    +'<div class="f-sec"><span class="lbl">Nature of the matter</span><div class="optrow">'
    +['Recovery suit','s.138 complaint','Maintenance (BNSS)','Writ petition','Eviction','Consultation only'].map(k=>opt('n-kind',k,k,N.kind===k)).join('')+'</div></div>'
    +'<div class="f-sec"><span class="lbl">Limitation</span><div class="optrow">'
@@ -1245,8 +1273,8 @@ function saveNew(){
     :{state:'unknown',label:'Limitation not worked out yet',basis:'Flagged at intake on '+fmtDot(TODAY)+' — state the date before filing.'};
   MATTERS.unshift({id,title:N.client.trim()+' v. '+N.opp.trim(),caseNo:null,cnr:null,
     kind:N.kind,court:null,complex:null,client:[cid],opp:[oid],filedOn:null,consultedOn:TODAY,
-    side:'pre-filing',limitation:lim,hearings:[],papers:[]});
-  N.client='';N.opp='';N.lim=null;N.limDate='';
+    side:'pre-filing',facts:(N.facts||'').trim()||null,limitation:lim,hearings:[],papers:[]});
+  N.client='';N.opp='';N.lim=null;N.limDate='';N.facts='';
   toast('File opened — cover first, case number when it is filed');
   setRoute({t:'shelf'},{t:'m',id});
 }
@@ -1273,6 +1301,7 @@ function matterHTML(m){
    +'</div><h1>'+esc(m.title)+'</h1>'
    +'<div class="kind">'+esc(m.kind)+(m.side?' · '+esc(m.side):'')+'</div><dl>';
   h+='<dt>Parties</dt><dd>'+partyLinks(m)+'</dd>';
+  if(m.facts)h+='<dt>Facts</dt><dd>'+esc(m.facts)+'</dd>';
   if(m.caseNo)h+='<dt>Case no.</dt><dd><b>'+esc(m.caseNo)+'</b>'+(m.cnr?' · CNR '+esc(m.cnr):'')+'</dd>';
   if(m.court)h+='<dt>Court</dt><dd>'+esc(m.court)+'</dd>';
   h+='<dt>'+(m.filedOn?'Filed':'Consulted')+'</dt><dd>'+fmtY(m.filedOn||m.consultedOn)+'</dd>';
@@ -1295,12 +1324,14 @@ function matterHTML(m){
   return h;
 }
 function partyLinks(m){
-  const links=side=>{
+  const roles=roleFor(m);
+  const links=(side,role)=>{
     const ids=side==='client'?(m.client||[]):(m.opp||[]);
-    if(ids.length)return ids.map(pid=>'<button class="plink" data-act="open-p" data-id="'+pid+'">'+esc(P(pid).name)+'</button>').join(', ');
-    return esc(side==='client'?(m.clientName||'—'):(m.oppName||'—'));
+    const tag=role?' <span class="faint tiny">('+role+')</span>':'';
+    if(ids.length)return ids.map(pid=>'<button class="plink" data-act="open-p" data-id="'+pid+'">'+esc(P(pid).name)+'</button>').join(', ')+tag;
+    return esc(side==='client'?(m.clientName||'—'):(m.oppName||'—'))+tag;
   };
-  return links('client')+' <span class="faint">vs</span> '+links('opp');
+  return links('client',roles&&roles[0])+' <span class="faint">vs</span> '+links('opp',roles&&roles[1]);
 }
 function resultBlock(m){
   const o=m.outcome,a=o.appeal,ap=a?appealLastDay(m):null;
@@ -1501,6 +1532,7 @@ function sheetHTML(){
      +'<div class="f-sec"><span class="lbl">Court</span><input class="tin" id="shc-court" placeholder="e.g. Tis Hazari (Civil Judge-02)" value="'+esc(SH.court??m.court??'')+'"></div>'
      +'<div class="f-sec"><span class="lbl">Complex</span><div class="optrow">'+COMPLEXES.map(c=>opt('c-complex',c,c,(SH.complex??m.complex)===c)).join('')+'</div></div>'
      +'<div class="f-sec"><span class="lbl">Filing date</span><input class="tin" type="date" id="shc-filed" value="'+esc(SH.filed??m.filedOn??'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Brief facts</span><input class="tin" id="shc-facts" placeholder="One line — what this matter is about" value="'+esc(SH.facts??m.facts??'')+'"></div>'
      +'<button class="btn-ink" data-act="cover-save">Save the cover</button>';
   }
   case'fee':{
@@ -1714,6 +1746,7 @@ document.addEventListener('click',e=>{
       if(SH.court!==undefined)m.court=SH.court.trim()||null;
       if(SH.complex)m.complex=SH.complex;
       if(SH.filed!==undefined&&SH.filed)m.filedOn=SH.filed;
+      if(SH.facts!==undefined)m.facts=SH.facts.trim()||null;
       if(m.filedOn&&m.side==='pre-filing')m.side='we act for the plaintiff';
       hideSheet();render();toast('Cover saved — findable the way the court names it');break;}
     case'fee-save':{m.fees=m.fees||[];m.fees.push({on:SH.fdate||TODAY,amt:parseInt(SH.amt)||0,note:(SH.note||'').trim()||null});hideSheet();render();toast('Received — on the file, on the story');break;}
@@ -1756,6 +1789,8 @@ document.addEventListener('input',e=>{
     case'n-client':N.client=el.value;$('#n-client-conf').innerHTML=conflictHTML(N.client);syncBtn('n-save',N.client.trim()&&N.opp.trim()&&N.lim);break;
     case'n-opp':N.opp=el.value;$('#n-opp-conf').innerHTML=conflictHTML(N.opp);syncBtn('n-save',N.client.trim()&&N.opp.trim()&&N.lim);break;
     case'n-limdate':N.limDate=el.value;break;
+    case'n-facts':N.facts=el.value;break;
+    case'shc-facts':SH.facts=el.value;break;
     case'shp-label':SH.label=el.value;syncBtn('paper-save',SH.label&&SH.kind&&SH.dt);break;
     case'shp-dt':SH.dt=el.value;syncBtn('paper-save',SH.label&&SH.kind&&SH.dt);break;
     case'shp-pages':SH.pages=el.value;break;
