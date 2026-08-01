@@ -1,13 +1,18 @@
-# LegalPen — practice organisation demo
+# LegalPen — a diary that keeps itself
 
-A working demo of a matter-organisation tool for a solo litigation practice in India: the case
-diary and its five-minute evening close, dates that are born from records rather than typed twice,
-papers labelled as what they are, and boards that show the day and the week across every file.
+A demo of a practice-organisation tool for a solo litigation lawyer in India: write each hearing
+down once — what the court did, the next date, anything directed — and the app does the rest:
+tomorrow's board, the dates that cannot be missed, the story of each case, the papers in order.
 
 **Try it:** https://giteshjha.github.io/legalpen-demo/
 
-Everything is demo data for a fictional Delhi practice, generated around today's date. It runs
-entirely in your browser — no server, no account, nothing leaves the device. Whatever you record
-updates every view instantly, and is kept in that browser so you can come back to it tomorrow.
+Everything is invented — a fictional Delhi practice, dated around a fictional Wednesday,
+19 August 2026, so the demo is the same believable court day whenever you open it. It runs
+entirely in your browser: no server, no account, nothing you type leaves the page. Refresh and
+the demo is pristine again.
 
-"Reset to a fresh demo day" is inside the **About** link, top right.
+Worth trying, in order: **Close the day** (record the two pending hearings; offer a busy date and
+watch the clash check answer) → **tomorrow's board**, which built itself → search **wagle** →
+start a new matter and type **Narain**.
+
+The previous version of this demo is preserved at the git tag `v1-original-demo`.
