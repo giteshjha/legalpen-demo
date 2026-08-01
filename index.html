@@ -108,6 +108,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .sp-link{display:block;width:100%;padding:7px 18px;font-size:14px;border-left:3px solid transparent}
 .sp-link:hover{background:var(--wash)}
 .sp-link.on{border-left-color:var(--ink);background:var(--wash);font-weight:600}
+.sp-link.sp-big{font-family:var(--serif);font-size:17px;font-weight:650;padding-top:9px}
 .sp-link .cnt{color:var(--ink3);font-size:12px;margin-left:6px}
 .sp-foot{margin-top:auto;padding:14px 18px 18px;font-size:11.5px;color:var(--ink3);line-height:1.7;border-top:1px solid var(--rule)}
 .sp-foot button{color:var(--ink2);font-size:11.5px;border-bottom:1px solid var(--rule2)}
@@ -907,6 +908,9 @@ function spineHTML(){
   const c=S.center;
   let h='<div class="sp-brand">Legal<b>Pen</b></div>'
    +'<div class="sp-sub">The diary that keeps itself.<br>A fictional Delhi practice · demo</div>';
+  h+='<button class="sp-link sp-big'+(c.t==='shelf'?' on':'')+'" data-act="shelf">Matters<span class="cnt">'+open_().length+' open · '+MATTERS.filter(m=>m.archived).length+' archived</span></button>';
+  h+='<button class="sp-link'+(c.t==='new'?' on':'')+'" data-act="new">+ New matter</button>';
+  h+='<div class="sp-gap"></div>';
   h+='<div class="sp-sec lbl">The register</div>';
   for(const d of spineDays()){
     const ls=listingsOn(d).length;
@@ -921,9 +925,7 @@ function spineHTML(){
   }
   h+='<div class="sp-gap"></div>';
   h+='<button class="sp-link'+(c.t==='week'?' on':'')+'" data-act="week">This week</button>';
-  h+='<button class="sp-link'+(c.t==='shelf'?' on':'')+'" data-act="shelf">The shelf<span class="cnt">'+open_().length+' open · '+MATTERS.filter(m=>m.archived).length+' archived</span></button>';
   h+='<button class="sp-link'+(c.t==='close'?' on':'')+'" data-act="close-start">Close the day'+(un?'<span class="cnt" style="color:var(--red)">'+un+' to record</span>':'')+'</button>';
-  h+='<button class="sp-link'+(c.t==='new'?' on':'')+'" data-act="new">+ New matter</button>';
   h+='<div class="sp-foot"><div class="lbl" style="margin-bottom:2px">Who holds the pen</div>'
    +'<div class="pen-tog"><button data-act="pen" data-v="advocate" class="'+(S.pen==='advocate'?'on':'')+'">Advocate</button>'
    +'<button data-act="pen" data-v="munshi" class="'+(S.pen==='munshi'?'on':'')+'">Munshi</button></div>'
@@ -936,7 +938,7 @@ function phnavHTML(){
   const un=unrecorded().length;
   return'<button data-act="day" data-v="'+TODAY+'" class="'+(c.t==='day'?'on':'')+'"><span class="d">'+dnum(TODAY)+'</span>Today'+(un?' ·':'')+'</button>'
    +'<button data-act="week" class="'+(c.t==='week'?'on':'')+'"><span class="d">§</span>Week</button>'
-   +'<button data-act="shelf" class="'+(['shelf','new'].includes(c.t)?'on':'')+'"><span class="d">≡</span>Shelf</button>';
+   +'<button data-act="shelf" class="'+(['shelf','new'].includes(c.t)?'on':'')+'"><span class="d">≡</span>Matters</button>';
 }
 
 /* ============================================================
@@ -1102,7 +1104,7 @@ function sortKey(m){
   return'9999';
 }
 function vShelf(){
-  let h='<div class="dayhead"><span class="dn" style="font-size:34px">The shelf</span></div>'
+  let h='<div class="dayhead"><span class="dn" style="font-size:34px">Matters</span></div>'
    +'<div class="searchbar" style="margin-top:14px"><input id="msearch" placeholder="Party, case no., court, paper, result, year…" value="'+esc(S.q)+'" autocomplete="off"></div>';
   const hits=searchMatters(S.q);
   if(hits){
@@ -1113,7 +1115,7 @@ function vShelf(){
   }
   const opens=open_(),arch=MATTERS.filter(m=>m.archived);
   h+='<div class="shelf-tabs">'
-   +'<button data-act="mtab" data-v="open" class="'+(S.mtab==='open'?'on':'')+'">On the shelf '+opens.length+'</button>'
+   +'<button data-act="mtab" data-v="open" class="'+(S.mtab==='open'?'on':'')+'">Open '+opens.length+'</button>'
    +'<button data-act="mtab" data-v="arch" class="'+(S.mtab==='arch'?'on':'')+'">Archived '+arch.length+'</button>'
    +'<span class="sp"></span><button class="act" data-act="new">+ New matter</button></div>';
   const rows=[...(S.mtab==='open'?opens:arch)].sort((a,b)=>{const ka=sortKey(a),kb=sortKey(b);return ka<kb?-1:1;});
