@@ -3,352 +3,359 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LegalPen — a diary that keeps itself</title>
+<title>LegalPen — the diary that keeps itself</title>
 <style>
 /* ============================================================
-   LegalPen demo v2 — one calm column, paper and ink.
+   LegalPen v3 — the register.
+   Ink on paper-white, ruled lines instead of cards, one red
+   used the way a registrar uses red ink. Two heroes: the date
+   numeral rules time; the cause title rules the file.
+   Desk layout ≥1100px: time spine | the day | the file.
    ============================================================ */
 :root{
-  --paper:#f7f4ee;
-  --card:#fffefb;
-  --ink:#211c15;
-  --mut:#71685c;
-  --faint:#9a9184;
-  --line:#e5ded2;
-  --line-soft:#eee9df;
-  --ox:#7c2b23;          /* oxblood — the one accent */
-  --ox-deep:#5f1f19;
-  --ox-wash:#f6ebe8;
-  --amber-ink:#7a5410;
-  --amber-wash:#f6ecd7;
-  --red:#a63324;
-  --red-wash:#f7e9e5;
-  --green:#2f6b48;
-  --green-wash:#e9f1ea;
+  --bg:#fcfbf7;
+  --pane:#fefdfa;
+  --ink:#1c1812;
+  --ink2:#5b5347;
+  --ink3:#8e8677;
+  --rule:#e7e2d6;
+  --rule2:#cfc7b6;
+  --wash:#f4f0e6;
+  --red:#b02e20;
+  --redwash:#f9ebe8;
   --serif:'Iowan Old Style',Georgia,'Times New Roman',serif;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
-  --maxw:680px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
-body{
-  font-family:var(--sans);color:var(--ink);background:var(--paper);
-  font-size:16px;line-height:1.5;
-  padding-bottom:calc(76px + env(safe-area-inset-bottom));
-}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:15px;line-height:1.5}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;text-align:left}
-input,select{font:inherit;color:inherit}
-a{color:var(--ox);text-decoration:none}
-.num{font-variant-numeric:tabular-nums}
-button:focus-visible,input:focus-visible{outline:2px solid var(--ox);outline-offset:2px;border-radius:4px}
+input,select,textarea{font:inherit;color:inherit;background:transparent}
+a{color:inherit}
+img{max-width:100%}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
-/* ---------- header ---------- */
-header{
-  max-width:var(--maxw);margin:0 auto;padding:18px 20px 6px;
-  display:flex;align-items:baseline;gap:12px;
+/* ---------- typographic atoms ---------- */
+.serif{font-family:var(--serif)}
+.lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.lbl.dark{color:var(--ink2)}
+.small{font-size:13px}.tiny{font-size:12px}
+.mut{color:var(--ink2)}.faint{color:var(--ink3)}.red{color:var(--red)}
+.rdot{color:var(--red);font-size:9px;vertical-align:2px}
+.stamp{
+  display:inline-block;border:1px solid var(--ink2);border-radius:2px;
+  padding:1.5px 8px;font-size:10px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink2);white-space:nowrap;
 }
-.wordmark{font-family:var(--serif);font-size:22px;letter-spacing:.2px}
-.wordmark b{color:var(--ox);font-weight:700}
-.demo-chip{
-  margin-left:auto;font-size:12px;color:var(--faint);text-align:right;line-height:1.35;
+.stamp.ink{border-color:var(--ink);color:var(--ink)}
+.stamp.red{border-color:var(--red);color:var(--red)}
+.stamp.fill{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.act{
+  font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink);
+  border-bottom:1px solid var(--rule2);padding-bottom:1px;
 }
-.demo-chip button{color:var(--ox);font-size:12px;padding:0}
+.act:hover{border-bottom-color:var(--ink)}
+.act.red{color:var(--red);border-bottom-color:transparent}
+.btn-ink{
+  display:block;width:100%;background:var(--ink);color:var(--bg);text-align:center;
+  padding:12px;border-radius:3px;font-weight:600;letter-spacing:.02em;margin-top:16px;
+}
+.btn-ink:disabled{background:var(--rule2);cursor:default}
+.btn-quiet{display:block;width:100%;text-align:center;color:var(--ink2);padding:10px;font-size:13.5px;margin-top:2px}
+.rule-head{
+  border-top:3px double var(--rule2);padding-top:8px;margin-top:30px;
+  display:flex;align-items:baseline;gap:10px;
+}
+.rule-head:first-child{margin-top:0}
+.rule-head .lbl{flex:1}
+.rule-head .act{border-bottom-color:transparent}
+.rule-head .act:hover{border-bottom-color:var(--ink)}
 
-/* ---------- nav ---------- */
-nav{
-  position:fixed;bottom:0;left:0;right:0;z-index:40;
-  background:rgba(255,254,251,.94);
+/* ---------- the desk ---------- */
+#desk{display:block;min-height:100vh}
+#spine{display:none}
+#file{display:none}
+#center{max-width:660px;margin:0 auto;padding:14px 18px 110px}
+@media(min-width:1100px){
+  #desk{display:grid;grid-template-columns:216px minmax(500px,1fr) minmax(520px,1.12fr);height:100vh;overflow:hidden}
+  #spine{display:flex;flex-direction:column;border-right:1px solid var(--rule);overflow-y:auto;background:var(--bg)}
+  #center{max-width:none;margin:0;overflow-y:auto;padding:26px 34px 60px;background:var(--pane)}
+  #file{display:block;overflow-y:auto;border-left:1px solid var(--rule);padding:26px 34px 60px;background:var(--bg)}
+  nav#phnav{display:none}
+}
+/* mid width: spine hidden, file as overlay (same as phone) */
+@media(min-width:660px) and (max-width:1099px){
+  #center{max-width:660px}
+}
+
+/* ---------- spine ---------- */
+.sp-brand{padding:20px 18px 12px;font-family:var(--serif);font-size:21px}
+.sp-brand b{color:var(--red);font-weight:700}
+.sp-sub{padding:0 18px 14px;font-size:11px;color:var(--ink3);line-height:1.5}
+.sp-sec{padding:12px 18px 4px}
+.sday{
+  display:flex;align-items:baseline;gap:9px;padding:4.5px 18px;width:100%;
+  border-left:3px solid transparent;
+}
+.sday:hover{background:var(--wash)}
+.sday.on{border-left-color:var(--ink);background:var(--wash)}
+.sday.today .num{color:var(--red)}
+.sday .num{font-family:var(--serif);font-size:17px;width:26px;text-align:right;flex-shrink:0}
+.sday .dw{font-size:11px;color:var(--ink3);width:28px;flex-shrink:0}
+.sday .marks{font-size:10px;letter-spacing:2px;color:var(--ink3)}
+.sday .marks .r{color:var(--red)}
+.sp-gap{height:7px;border-bottom:1px solid var(--rule);margin:0 18px 7px}
+.sp-link{display:block;width:100%;padding:7px 18px;font-size:14px;border-left:3px solid transparent}
+.sp-link:hover{background:var(--wash)}
+.sp-link.on{border-left-color:var(--ink);background:var(--wash);font-weight:600}
+.sp-link .cnt{color:var(--ink3);font-size:12px;margin-left:6px}
+.sp-foot{margin-top:auto;padding:14px 18px 18px;font-size:11.5px;color:var(--ink3);line-height:1.7;border-top:1px solid var(--rule)}
+.sp-foot button{color:var(--ink2);font-size:11.5px;border-bottom:1px solid var(--rule2)}
+.pen-tog{display:flex;gap:0;margin:6px 0 10px;border:1px solid var(--rule2);border-radius:3px;overflow:hidden;width:max-content}
+.pen-tog button{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;color:var(--ink3)}
+.pen-tog button.on{background:var(--ink);color:var(--bg)}
+
+/* ---------- phone nav ---------- */
+nav#phnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(252,251,247,.95);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  border-top:1px solid var(--line);
-  padding-bottom:env(safe-area-inset-bottom);
+  border-top:1px solid var(--rule);padding-bottom:env(safe-area-inset-bottom);
 }
-.nav-in{max-width:var(--maxw);margin:0 auto;display:flex}
-nav button{
-  flex:1;text-align:center;padding:11px 0 9px;font-size:12.5px;color:var(--mut);
-  display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;
-}
-nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-nav button.on{color:var(--ox-deep)}
-nav button .ndot{
-  position:absolute;top:7px;left:calc(50% + 12px);width:7px;height:7px;border-radius:50%;
-  background:var(--ox);
-}
-@media(min-width:760px){
-  body{padding-bottom:40px}
-  nav{position:static;background:none;border:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-  .nav-in{padding:2px 20px 0;gap:4px;justify-content:flex-start}
-  nav button{flex:none;flex-direction:row;gap:7px;font-size:14.5px;padding:8px 14px;border-radius:8px}
-  nav button svg{width:17px;height:17px}
-  nav button.on{background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
-  nav button .ndot{position:static;margin-left:2px}
-}
+nav#phnav .in{max-width:660px;margin:0 auto;display:flex}
+nav#phnav button{flex:1;text-align:center;padding:10px 0 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+nav#phnav button.on{color:var(--ink);font-weight:700}
+nav#phnav button .d{display:block;font-family:var(--serif);font-size:17px;text-transform:none;letter-spacing:0}
+nav#phnav button.on .d{color:var(--red)}
 
-/* ---------- main column ---------- */
-main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 32px}
-.page-head{margin:14px 0 4px}
-.page-head h1{font-family:var(--serif);font-size:26px;font-weight:600;line-height:1.2}
-.page-head .sub{color:var(--mut);font-size:14.5px;margin-top:3px}
-.backrow{margin:12px 0 0}
-.backrow button{color:var(--ox);font-size:14.5px;padding:4px 0}
-
-/* ---------- sections ---------- */
-.sect{margin-top:26px}
-.sect-label{
-  font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);
-  display:flex;align-items:baseline;gap:8px;margin-bottom:8px;
-}
-.sect-label .lnk{margin-left:auto;letter-spacing:0;text-transform:none;font-size:13.5px;color:var(--ox)}
-
-/* ---------- generic list card ---------- */
-.list{
-  background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;
-}
-.row{padding:13px 16px;border-top:1px solid var(--line-soft);display:block;width:100%}
-.row:first-child{border-top:none}
-button.row:active{background:var(--paper)}
-.row .r1{display:flex;align-items:baseline;gap:10px}
-.row .title{font-family:var(--serif);font-size:16.5px;font-weight:600}
-.row .aside{margin-left:auto;flex-shrink:0}
-.row .meta{color:var(--mut);font-size:13.5px;margin-top:2px}
-.row .meta b{color:var(--ink);font-weight:600}
-.quiet{color:var(--mut)} .faint{color:var(--faint)}
-.small{font-size:13.5px}
-
-/* pills */
-.pill{
-  display:inline-block;font-size:12px;font-weight:600;border-radius:99px;
-  padding:2px 9px;white-space:nowrap;
-}
-.pill.amber{background:var(--amber-wash);color:var(--amber-ink)}
-.pill.red{background:var(--red-wash);color:var(--red)}
-.pill.green{background:var(--green-wash);color:var(--green)}
-.pill.plain{background:var(--paper);color:var(--mut);border:1px solid var(--line)}
-.pill.ox{background:var(--ox-wash);color:var(--ox-deep)}
-
-/* day strips on Today */
-.court-group{margin-top:14px}
-.court-group:first-child{margin-top:0}
-.court-name{
-  font-size:13px;font-weight:650;color:var(--ox-deep);margin:0 2px 6px;
-  display:flex;align-items:baseline;gap:8px;
-}
-.court-name .trip{color:var(--faint);font-weight:500;font-size:12.5px}
-
-.listing .r1 .caseno{font-size:13px;color:var(--mut);font-weight:500}
-.listing .where{color:var(--mut);font-size:13.5px;margin-top:1px}
-.listing .last{color:var(--mut);font-size:13.5px;margin-top:4px}
-.listing .last b{color:var(--ink);font-weight:600}
-.listing .done-line{margin-top:4px;font-size:13.5px;color:var(--green)}
-.listing .chips{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
-
-/* attention strip */
+/* ---------- day register (center) ---------- */
+.dayhead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.dayhead .dn{font-family:var(--serif);font-size:56px;line-height:1;letter-spacing:-1px}
+.dayhead .dmeta .dw{font-size:13px;letter-spacing:.22em;text-transform:uppercase}
+.dayhead .dmeta .sub{color:var(--ink2);font-size:13.5px;margin-top:2px}
+.dayhead.isred .dn{color:var(--red)}
+.regrow{padding:13px 0;border-top:1px solid var(--rule);width:100%;display:block}
+.regrow:hover{background:var(--wash)}
+.regrow .t1{display:flex;align-items:baseline;gap:10px}
+.regrow .cause{font-family:var(--serif);font-size:17px;font-weight:600}
+.regrow .cno{margin-left:auto;font-size:12px;color:var(--ink3);white-space:nowrap;flex-shrink:0}
+.regrow .l2{font-size:13.5px;color:var(--ink2);margin-top:2px}
+.regrow .l2 b{color:var(--ink);font-weight:600}
+.regrow .l3{font-size:13px;color:var(--ink2);margin-top:4px}
+.regrow .stamps{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.courtline{display:flex;align-items:baseline;gap:8px;margin:16px 0 2px}
+.courtline .c{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+.courtline .trip{font-size:12px;color:var(--ink3)}
+.duerow{padding:12px 0;border-top:1px solid var(--rule);width:100%;display:block}
+.duerow:hover{background:var(--wash)}
+.duerow .t1{display:flex;align-items:baseline;gap:10px}
+.duerow .what{font-weight:600;font-size:15px}
+.duerow .dleft{margin-left:auto;font-size:12.5px;color:var(--ink3);white-space:nowrap}
+.duerow .dleft.hot{color:var(--red);font-weight:600}
+.duerow .of{font-size:13px;color:var(--ink2);margin-top:1px}
+.duerow .cost{font-size:13px;color:var(--ink2);margin-top:3px}
+.duerow .prov{font-size:11.5px;color:var(--ink3);margin-top:3px}
+.attn .duerow .what{color:var(--red)}
 .strip{
-  border-radius:12px;padding:13px 16px;margin-top:14px;
-  display:flex;gap:12px;align-items:center;width:100%;
+  border:1px solid var(--rule2);border-left:3px solid var(--red);border-radius:3px;
+  padding:11px 14px;margin-top:18px;display:flex;gap:12px;align-items:center;width:100%;
+  background:var(--pane);
 }
-.strip.amber{background:var(--amber-wash)}
-.strip.amber .go{color:var(--amber-ink)}
-.strip .t{font-size:14.5px;line-height:1.45}
+.strip .t{font-size:14px}
 .strip .t b{font-weight:650}
-.strip .go{margin-left:auto;font-weight:650;font-size:14px;white-space:nowrap}
-
-/* try chips */
-.tries{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.tries button{
-  font-size:13px;color:var(--ox-deep);background:var(--card);
-  border:1px solid var(--line);border-radius:99px;padding:6px 12px;
-}
-
-/* date check */
-.datecheck{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.datecheck .lead{font-size:14px;color:var(--mut);margin-bottom:8px}
+.strip .go{margin-left:auto;white-space:nowrap}
+.strip.ok{border-left-color:var(--ink3)}
+.checkbox-line{font-size:13px;color:var(--ink2);margin-top:6px}
 .datecheck input[type=date]{
-  width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 12px;
-  background:var(--paper);font-size:16px;
+  width:100%;border:0;border-bottom:1px solid var(--rule2);padding:8px 2px;font-size:16px;background:transparent;
 }
-.clash-note{margin-top:10px;font-size:14px;line-height:1.5;border-radius:9px;padding:10px 12px}
-.clash-note.ok{background:var(--green-wash);color:var(--green)}
-.clash-note.warn{background:var(--amber-wash);color:var(--amber-ink)}
-.clash-note.bad{background:var(--red-wash);color:var(--red)}
+.datecheck input[type=date]:focus{border-bottom-color:var(--ink)}
+.clashline{margin-top:10px;font-size:13.5px;line-height:1.55;padding-left:12px;border-left:3px solid var(--rule2)}
+.clashline.ok{border-left-color:#3d7a55;color:#33604a}
+.clashline.warn{border-left-color:#a8720d;color:#7c5a14}
+.clashline.bad{border-left-color:var(--red);color:var(--red)}
+.causeline{font-size:12.5px;margin-top:6px;color:var(--ink2)}
+.causeline .act{margin-left:12px}
+.causeline.mis{color:var(--red)}
 
-/* due rows */
-.due .due-title{font-weight:600;font-size:15.5px}
-.due .prov{color:var(--faint);font-size:12.5px;margin-top:3px}
-.due .cost{color:var(--mut);font-size:13.5px;margin-top:2px}
-
-/* week */
-.day-block{margin-top:18px}
-.day-head{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
-.day-head .d{font-size:15px;font-weight:650}
-.day-head .d.today{color:var(--ox-deep)}
-.day-head .note{color:var(--faint);font-size:13px}
-.day-empty{color:var(--faint);font-size:14px;padding:2px 2px 0}
-
-/* matters */
-.searchbar{position:relative;margin-top:12px}
+/* ---------- shelf / search ---------- */
 .searchbar input{
-  width:100%;background:var(--card);border:1px solid var(--line);border-radius:11px;
-  padding:11px 14px;font-size:16px;
+  width:100%;border:0;border-bottom:1px solid var(--rule2);padding:9px 2px;font-size:16px;
 }
-.searchbar input::placeholder{color:var(--faint)}
-.mtabs{display:flex;gap:6px;margin-top:12px;align-items:center}
-.mtabs button{font-size:13.5px;color:var(--mut);padding:5px 12px;border-radius:99px;border:1px solid transparent}
-.mtabs button.on{background:var(--card);border-color:var(--line);color:var(--ink);font-weight:600}
-.mtabs .newbtn{margin-left:auto;color:var(--ox);font-weight:600}
-.why{font-size:12.5px;color:var(--ox-deep);margin-top:3px}
+.searchbar input:focus{border-bottom-color:var(--ink)}
+.searchbar input::placeholder{color:var(--ink3)}
+.shelf-tabs{display:flex;gap:14px;margin-top:14px;align-items:baseline}
+.shelf-tabs button{font-size:13px;color:var(--ink3);padding-bottom:2px;border-bottom:2px solid transparent}
+.shelf-tabs button.on{color:var(--ink);font-weight:650;border-bottom-color:var(--ink)}
+.shelf-tabs .sp{flex:1}
+.why{font-size:12px;color:var(--red);margin-top:3px}
 
-/* matter page */
-.cover{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 14px;margin-top:14px}
-.cover h1{font-family:var(--serif);font-size:23px;font-weight:650;line-height:1.25}
-.cover .kindline{color:var(--mut);font-size:14px;margin-top:2px}
-.cover dl{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:14.5px}
-.cover dt{color:var(--faint)}
-.cover dd b{font-weight:650}
-.cover .party-btn{color:var(--ox);font-weight:500}
-.cover .cover-actions{display:flex;gap:16px;margin-top:14px;border-top:1px solid var(--line-soft);padding-top:11px}
-.cover .cover-actions button{font-size:14px;color:var(--ox);font-weight:550}
-.cover .cover-actions .muted-act{color:var(--faint);font-weight:500}
-.result-line{margin-top:10px;font-size:14.5px;padding:9px 12px;border-radius:9px;background:var(--paper)}
+/* ---------- file pane ---------- */
+.file-empty{color:var(--ink3);text-align:center;padding-top:18vh;font-size:14px;line-height:2}
+.file-empty .big{font-family:var(--serif);font-size:22px;color:var(--ink2)}
+.fcover .kicker{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fcover h1{font-family:var(--serif);font-size:27px;font-weight:650;line-height:1.2;margin-top:6px}
+.fcover .kind{color:var(--ink2);font-size:13.5px;margin-top:3px}
+.fcover dl{margin-top:14px;display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;font-size:14px}
+.fcover dt{color:var(--ink3);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.fcover dd b{font-weight:650}
+.fcover dd .plink{border-bottom:1px solid var(--rule2)}
+.fcover dd .plink:hover{border-bottom-color:var(--ink)}
+.factions{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid var(--rule)}
+.result-block{margin-top:14px;padding:12px 14px;border:1px solid var(--rule2);border-left:3px solid var(--red);border-radius:3px;font-size:13.5px;line-height:1.6}
+.result-block.won{border-left-color:#3d7a55}
+.ftabs{display:flex;gap:16px;margin-top:22px;border-bottom:1px solid var(--rule)}
+.ftabs button{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);padding:0 0 7px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ftabs button.on{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+.dentry{padding:13px 0;border-top:1px solid var(--rule)}
+.dentry:first-child{border-top:none}
+.dentry .dl1{display:flex;align-items:baseline;gap:10px}
+.dentry .don{font-family:var(--serif);font-size:15.5px;font-weight:600;white-space:nowrap}
+.dentry .purp{margin-left:auto;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:right}
+.dentry .what{font-size:14px;margin-top:4px}
+.dentry .what .det{color:var(--ink2)}
+.dentry .sub{font-size:13px;color:var(--ink2);margin-top:3px}
+.dentry .movednote{font-size:12.5px;color:var(--ink3);margin-top:3px;font-style:italic}
+.dentry .dirline{font-size:13px;color:var(--ink2);margin-top:5px;display:flex;gap:8px;align-items:baseline}
+.dentry .dirline .tickbtn{font-size:12px;border:1px solid var(--rule2);border-radius:2px;padding:0 6px;color:var(--ink2)}
+.dentry .dirline .done{color:#3d7a55}
+.dentry.blank .what{color:var(--red)}
+.paper-row{padding:11px 0;border-top:1px solid var(--rule)}
+.paper-row .pl{font-weight:600;font-size:14.5px}
+.paper-row .pm{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.kindf{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 2px}
+.kindf button{font-size:12px;color:var(--ink3);padding-bottom:1px;border-bottom:2px solid transparent}
+.kindf button.on{color:var(--ink);font-weight:650;border-bottom-color:var(--ink)}
+.story-row{display:flex;gap:14px;padding:8px 0;border-top:1px solid var(--rule);font-size:13.5px}
+.story-row .sd{color:var(--ink3);white-space:nowrap;font-size:12.5px;width:72px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.fee-row{display:flex;gap:12px;padding:9px 0;border-top:1px solid var(--rule);font-size:14px;align-items:baseline}
+.fee-row .amt{font-family:var(--serif);font-weight:650;width:96px}
+.fee-total{margin-top:10px;padding-top:8px;border-top:3px double var(--rule2);font-size:14px;display:flex}
+.fee-total b{margin-left:auto;font-family:var(--serif)}
+.footnote{font-size:12px;color:var(--ink3);margin-top:12px;line-height:1.6}
 
-.tabs{display:flex;gap:2px;margin-top:18px;border-bottom:1px solid var(--line)}
-.tabs button{font-size:14.5px;color:var(--mut);padding:8px 13px;border-bottom:2px solid transparent;margin-bottom:-1px}
-.tabs button.on{color:var(--ox-deep);font-weight:650;border-bottom-color:var(--ox)}
-
-.diary-entry{padding:13px 16px;border-top:1px solid var(--line-soft)}
-.diary-entry:first-child{border-top:none}
-.diary-entry .dline{display:flex;align-items:baseline;gap:10px}
-.diary-entry .don{font-weight:650;font-size:14.5px;white-space:nowrap}
-.diary-entry .purp{margin-left:auto;color:var(--faint);font-size:12.5px;flex-shrink:0;text-align:right}
-.diary-entry .what{margin-top:3px;font-size:14.5px}
-.diary-entry .what .det{color:var(--mut)}
-.diary-entry .next-line{margin-top:3px;font-size:13.5px;color:var(--mut)}
-.diary-entry .dirline{margin-top:5px;font-size:13.5px;color:var(--mut)}
-.diary-entry .dirline .tick{color:var(--green)}
-.diary-entry.blank .what{color:var(--red)}
-
-.paper-row .plabel{font-weight:600;font-size:15px}
-.paper-row .pmeta{color:var(--mut);font-size:13px;margin-top:2px}
-.kindf{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
-.kindf button{font-size:12.5px;color:var(--mut);padding:4px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card)}
-.kindf button.on{background:var(--ox-wash);border-color:transparent;color:var(--ox-deep);font-weight:600}
-
-.story-row{display:flex;gap:14px;padding:9px 16px;border-top:1px solid var(--line-soft);font-size:14px}
-.story-row:first-child{border-top:none}
-.story-row .sd{color:var(--faint);white-space:nowrap;font-size:13px;padding-top:1px;width:74px;flex-shrink:0}
-
-/* forms & close flow */
-.formcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
-.f-label{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin:16px 0 7px}
-.f-label:first-child{margin-top:0}
-.chiprow{display:flex;gap:7px;flex-wrap:wrap}
-.chip{
-  font-size:14px;padding:7px 13px;border-radius:99px;border:1px solid var(--line);
-  background:var(--paper);color:var(--ink);
+/* ---------- forms & sheets ---------- */
+.f-sec{margin-top:18px}
+.f-sec .lbl{display:block;margin-bottom:8px}
+.tin{
+  width:100%;border:0;border-bottom:1px solid var(--rule2);padding:7px 2px;font-size:15.5px;background:transparent;
 }
-.chip.on{background:var(--ox);border-color:var(--ox);color:#fff;font-weight:550}
-.chip.more{color:var(--ox);border-style:dashed}
-.tinput{
-  width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 12px;
-  background:var(--paper);font-size:16px;
+.tin:focus{border-bottom-color:var(--ink)}
+.tin::placeholder{color:var(--ink3)}
+.optrow{display:flex;gap:7px;flex-wrap:wrap}
+.opt{
+  border:1px solid var(--rule2);border-radius:2px;padding:4.5px 11px;font-size:13px;color:var(--ink2);background:var(--pane);
 }
-.tinput::placeholder{color:var(--faint)}
-.f-hint{font-size:12.5px;color:var(--faint);margin-top:5px}
-.btn{
-  display:block;width:100%;text-align:center;border-radius:11px;padding:13px;
-  font-size:16px;font-weight:650;margin-top:14px;
-}
-.btn.primary{background:var(--ox);color:#fff}
-.btn.primary:disabled{background:#c9aca7;cursor:default}
-.btn.ghost{color:var(--mut);font-weight:500;font-size:14.5px;padding:10px;margin-top:4px}
-.close-head{display:flex;align-items:baseline;gap:10px;margin-top:6px}
-.close-head .prog{margin-left:auto;color:var(--faint);font-size:13.5px}
-.hearing-id .t{font-family:var(--serif);font-size:19px;font-weight:650}
-.hearing-id .m{color:var(--mut);font-size:14px;margin-top:2px}
-
-/* done screen */
-.done-hero{text-align:center;padding:44px 10px 10px}
-.done-hero .big{font-family:var(--serif);font-size:24px;font-weight:650}
-.done-hero .sub{color:var(--mut);margin-top:8px;font-size:15px}
-.done-hero .tick{
-  width:52px;height:52px;border-radius:50%;background:var(--green-wash);color:var(--green);
-  font-size:26px;line-height:52px;margin:0 auto 16px;
-}
-
-/* party */
-.party-head{margin-top:14px}
-.party-head h1{font-family:var(--serif);font-size:24px;font-weight:650}
-.party-head .sub{color:var(--mut);font-size:14.5px;margin-top:3px}
-
-/* sheet + toast */
+.opt.on{background:var(--ink);border-color:var(--ink);color:var(--bg);font-weight:550}
+.opt.more{border-style:dashed;color:var(--ink3)}
+.fhint{font-size:12px;color:var(--ink3);margin-top:6px;line-height:1.55}
+.fhint.red{color:var(--red)}
 #sheetwrap{position:fixed;inset:0;z-index:60;display:none}
 #sheetwrap.open{display:block}
-#sheetwrap .shade{position:absolute;inset:0;background:rgba(30,24,16,.42)}
+#sheetwrap .shade{position:absolute;inset:0;background:rgba(28,24,18,.45)}
 #sheet{
-  position:absolute;left:0;right:0;bottom:0;max-height:86%;overflow:auto;
-  background:var(--card);border-radius:18px 18px 0 0;padding:22px 20px calc(26px + env(safe-area-inset-bottom));
+  position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow:auto;
+  background:var(--bg);border-radius:10px 10px 0 0;padding:24px 22px calc(28px + env(safe-area-inset-bottom));
+  border-top:3px double var(--rule2);
 }
 @media(min-width:760px){
   #sheet{left:50%;right:auto;top:50%;bottom:auto;transform:translate(-50%,-50%);
-    width:520px;border-radius:16px;max-height:82%}
+    width:560px;border-radius:6px;max-height:84%;border:1px solid var(--rule2)}
 }
-#sheet h2{font-family:var(--serif);font-size:20px;font-weight:650;margin-bottom:10px}
-#sheet p{font-size:14.5px;color:var(--mut);margin-top:8px}
-#sheet p b{color:var(--ink)}
-#sheet ul{margin:8px 0 0 18px;font-size:14.5px;color:var(--mut)}
-#sheet li{margin-top:5px}
+#sheet h2{font-family:var(--serif);font-size:21px;font-weight:650}
+#sheet .sub{color:var(--ink2);font-size:13.5px;margin-top:4px}
 #toast{
-  position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
-  background:var(--ink);color:var(--paper);font-size:14px;padding:9px 16px;border-radius:99px;
-  opacity:0;transition:opacity .25s;pointer-events:none;z-index:80;white-space:nowrap;
+  position:fixed;bottom:calc(70px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);font-size:13.5px;padding:9px 18px;border-radius:3px;
+  opacity:0;transition:opacity .25s;pointer-events:none;z-index:80;white-space:nowrap;max-width:92vw;
 }
 #toast.show{opacity:1}
-footer{
-  max-width:var(--maxw);margin:0 auto;padding:6px 20px 20px;
-  color:var(--faint);font-size:12.5px;line-height:1.6;
+@media(min-width:1100px){#toast{bottom:34px}}
+
+/* close flow */
+.close-id{padding-bottom:6px}
+.close-id .t{font-family:var(--serif);font-size:20px;font-weight:650}
+.close-id .m{color:var(--ink2);font-size:13.5px;margin-top:3px}
+.prog{font-size:12px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
+.done-hero{text-align:center;padding:60px 10px 8px}
+.done-hero .dn{font-family:var(--serif);font-size:46px;color:var(--red)}
+.done-hero .big{font-family:var(--serif);font-size:23px;font-weight:650;margin-top:8px}
+.done-hero .sub{color:var(--ink2);margin-top:10px;font-size:14.5px;line-height:1.6}
+
+/* bundle */
+.b-row{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid var(--rule);width:100%}
+.b-row .ord{width:26px;height:26px;border:1px solid var(--rule2);border-radius:50%;text-align:center;line-height:24px;font-size:13px;flex-shrink:0;font-family:var(--serif)}
+.b-row.sel .ord{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.b-index{margin-top:14px;border:1px solid var(--rule2)}
+.b-index table{width:100%;border-collapse:collapse;font-size:13px}
+.b-index th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule2);background:var(--wash)}
+.b-index td{padding:7px 10px;border-bottom:1px solid var(--rule)}
+.b-index td.num,.b-index th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* party */
+.pt-head h1{font-family:var(--serif);font-size:24px;font-weight:650}
+.pt-head .sub{color:var(--ink2);font-size:13.5px;margin-top:4px}
+.stand{margin-top:12px;padding:10px 14px;border-left:3px solid var(--rule2);font-size:13.5px;color:var(--ink2)}
+
+/* phone file overlay */
+@media(max-width:1099px){
+  #file.open{
+    display:block;position:fixed;inset:0;z-index:50;background:var(--bg);
+    overflow-y:auto;padding:16px 18px 80px;
+  }
 }
-footer button{color:var(--ox);font-size:12.5px}
+.file-back{display:none;margin-bottom:10px}
+@media(max-width:1099px){.file-back{display:block}}
+footer{max-width:660px;margin:0 auto;padding:10px 18px 26px;color:var(--ink3);font-size:11.5px;line-height:1.7}
+@media(min-width:1100px){footer{display:none}}
+footer button{color:var(--ink2);font-size:11.5px;border-bottom:1px solid var(--rule2)}
 </style>
 </head>
 <body>
-<header>
-  <div class="wordmark">Legal<b>Pen</b></div>
-  <div class="demo-chip">Demo — a fictional Delhi practice<br>Wednesday 19 August 2026 · <button data-act="about">about</button></div>
-</header>
-<nav><div class="nav-in" id="nav"></div></nav>
-<main id="app"></main>
+<div id="desk">
+  <aside id="spine"></aside>
+  <main id="center"></main>
+  <section id="file"></section>
+</div>
 <footer id="foot"></footer>
+<nav id="phnav"><div class="in" id="phnav-in"></div></nav>
 <div id="sheetwrap"><div class="shade" data-act="sheet-close"></div><div id="sheet"></div></div>
 <div id="toast"></div>
 <script>
 'use strict';
 /* ============================================================
-   Fixed demo clock. Everything is dated around Wed 19 Aug 2026
-   and hand-checked: weekdays only, forum-correct windows.
+   Fixed demo clock: Wednesday 19 August 2026. Every date below
+   is hand-checked — weekdays, forum-correct windows, holidays.
+   Nothing persists: refresh and the demo is pristine.
    ============================================================ */
 const TODAY='2026-08-19';
 const MS=86400000;
 const DW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const DWS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const HOLIDAYS={'2026-01-26':'Republic Day','2026-08-15':'Independence Day','2026-10-02':'Gandhi Jayanti'};
 function fromISO(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
 function dow(s){return fromISO(s).getDay();}
+function dnum(s){return fromISO(s).getDate();}
 function addDays(s,n){const d=fromISO(s);d.setDate(d.getDate()+n);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function daysUntil(s){return Math.round((fromISO(s)-fromISO(TODAY))/MS);}
 function fmt(s){const d=fromISO(s);return DWS[d.getDay()]+' '+d.getDate()+' '+MO[d.getMonth()];}
-function fmtY(s){const d=fromISO(s);return DWS[d.getDay()]+' '+d.getDate()+' '+MO[d.getMonth()]+(d.getFullYear()===2026?'':' '+d.getFullYear());}
+function fmtY(s){const d=fromISO(s);return fmt(s)+(d.getFullYear()===2026?'':' '+d.getFullYear());}
 function fmtDot(s){const[y,m,d]=s.split('-');return d+'.'+m+'.'+y;}
 function fmtLong(s){const d=fromISO(s);return DW[d.getDay()]+' '+d.getDate()+' '+MO[d.getMonth()]+' '+d.getFullYear();}
+function closedWhy(s){if(dow(s)===0)return'Sunday — courts closed';if(HOLIDAYS[s])return HOLIDAYS[s]+' — courts closed';return null;}
+function rollS4(s){let x=s,i=0,rolled=false;while(closedWhy(x)&&i++<10){x=addDays(x,1);rolled=true;}return{date:x,rolled};}
 function rel(s){const n=daysUntil(s);
   if(n===0)return'today';if(n===1)return'tomorrow';if(n===-1)return'yesterday';
   return n>0?('in '+n+' days'):(Math.abs(n)+' days ago');}
+function inr(n){return'₹'+Number(n).toLocaleString('en-IN');}
 function esc(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const $=s=>document.querySelector(s);
 let toastT=null;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);}
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
 /* ============================================================
-   PARTIES — people are records. Reused across matters on purpose.
+   PARTIES — people are records, reused across matters on purpose.
    ============================================================ */
 const PARTIES={
  p1:{name:'Ramesh Gupta',phone:'98101 44852'},
@@ -377,20 +384,23 @@ const PARTIES={
  p24:{name:'Rekha Saini',phone:'98186 55372'},
  p25:{name:'Pawan Mehra',phone:'98680 73145'},
  p26:{name:'Sushila Devi',phone:'98915 40332'},
+ p27:{name:'Prem Kohli'},
+ p28:{name:'Om Sethi'},
 };
+let PSEQ=1;
 function P(id){return PARTIES[id]||{name:'—'};}
 
 /* ============================================================
-   MATTERS.
-   Deep matters carry full diaries and papers; the rest carry a
-   cover and a next date, like most files on a real shelf.
-   Outcome codes are picked; the one-line detail is the lawyer's
-   own words — picked for counting, written for reading.
+   MATTERS. Deep files carry full diaries, papers and fees; the
+   rest carry a cover and a next date, like most files on a shelf.
+   Outcomes are picked codes + one line in the lawyer's own words.
+   The next date lives ONLY on the hearing that gave it.
    ============================================================ */
 const MATTERS=[
 {id:'m1',title:'Gupta v. Gupta',caseNo:'CS 214/2024',cnr:'DLCT01-004521-2024',
  kind:'Partition suit',court:'Tis Hazari (Civil Judge-02)',complex:'Tis Hazari',
  client:['p1'],opp:['p2'],filedOn:'2024-09-12',side:'we act for the plaintiff',
+ fees:[{on:'2024-09-12',amt:40000,note:'on filing'},{on:'2026-07-15',amt:15000,note:'towards evidence stage'}],
  hearings:[
   {on:'2025-11-18',purpose:'Written statement',outcome:{code:'adj_their',label:'Adjourned — their request',detail:'defendant sought time for WS'},next:{on:'2026-06-17',purpose:'Replication'}},
   {on:'2026-06-17',purpose:'Replication',outcome:{code:'done',label:'Purpose completed',detail:'replication filed; documents taken on record'},next:{on:'2026-07-15',purpose:'Admission / denial'}},
@@ -411,6 +421,7 @@ const MATTERS=[
 {id:'m2',title:'Sharma Traders v. Malhotra',caseNo:'CC 87/2025',cnr:'DLDW02-001873-2025',
  kind:'Complaint u/s 138 NI Act',court:'Dwarka (MM, NI Act-05)',complex:'Dwarka',
  client:['p3'],opp:['p4'],filedOn:'2025-03-04',side:'we act for the complainant',
+ fees:[{on:'2025-03-04',amt:25000,note:'on filing'}],
  hearings:[
   {on:'2026-05-06',purpose:'Notice u/s 251',outcome:{code:'order',label:'Order passed',detail:'notice framed; accused pleads not guilty'},next:{on:'2026-07-08',purpose:'Complainant’s evidence (CW-1)'}},
   {on:'2026-07-08',purpose:'Complainant’s evidence (CW-1)',presence:{who:'witness',name:'Anil Sharma (CW-1)'},
@@ -442,6 +453,7 @@ const MATTERS=[
 {id:'m4',title:'Kapoor v. Kapoor',caseNo:'MC 219/2025',cnr:'DLSK03-002218-2025',
  kind:'Maintenance u/s 144 BNSS',court:'Saket (Family Court-01)',complex:'Saket',
  client:['p7'],opp:['p8'],filedOn:'2025-07-19',side:'we act for the petitioner',
+ fees:[{on:'2025-07-19',amt:20000,note:'on filing'}],
  hearings:[
   {on:'2026-07-22',purpose:'Reply of respondent',outcome:{code:'adj_their',label:'Adjourned — their request',detail:'respondent sought time for reply'},next:{on:'2026-08-19',purpose:'Reply & interim maintenance',presence:{who:'client',name:'Meena Kapoor'}}},
   {on:'2026-08-19',purpose:'Reply & interim maintenance',room:'Court 3',item:21,presence:{who:'client',name:'Meena Kapoor'},
@@ -476,17 +488,17 @@ const MATTERS=[
  client:['p11'],opp:['p12'],filedOn:'2024-04-22',side:'we acted for the plaintiff',
  outcome:{result:'lost',label:'Suit dismissed',judgmentOn:'2026-08-07',recordedOn:'2026-08-10',
   appeal:{forum:'District Judge, Saket',basis:'Art. 116(b), Limitation Act 1963 — 30 days',
-   windowDays:30,copyAppliedOn:'2026-08-10',copyReceivedOn:'2026-08-17',deciding:'undecided'}},
+   windowDays:30,decision:'undecided'}},
  hearings:[
   {on:'2026-05-19',purpose:'Final arguments',outcome:{code:'part',label:'Part-heard',detail:'plaintiff’s arguments concluded'},next:{on:'2026-07-21',purpose:'Final arguments (defendant)'}},
-  {on:'2026-07-21',purpose:'Final arguments (defendant)',outcome:{code:'done',label:'Purpose completed',detail:'arguments concluded; judgment reserved'},next:{on:'2026-08-07',purpose:'Judgment'}},
+  {on:'2026-07-21',purpose:'Final arguments (defendant)',outcome:{code:'reserved',label:'Judgment reserved',detail:'arguments concluded'},next:{on:'2026-08-07',purpose:'Judgment'}},
   {on:'2026-08-07',purpose:'Judgment',outcome:{code:'order',label:'Order passed',detail:'suit dismissed; no order as to costs'},next:null},
  ],
  papers:[
   {kind:'Pleading',label:'Plaint with documents',dt:'2024-04-22',pages:31,side:'us'},
   {kind:'Order',label:'Judgment dt. 07.08.2026',dt:'2026-08-07',pages:14,side:'court'},
-  {kind:'Pleading',label:'Certified-copy application',dt:'2026-08-10',pages:1,side:'us'},
-  {kind:'Order',label:'Certified copy of judgment (received)',dt:'2026-08-17',pages:14,side:'court'},
+  {kind:'Copy application',label:'Certified-copy application',dt:'2026-08-10',pages:1,side:'us'},
+  {kind:'Certified copy',label:'Certified copy of judgment (received)',dt:'2026-08-17',pages:14,side:'court'},
  ]},
 
 {id:'m7',title:'Gulshan Arora v. Skyline Infra LLP',caseNo:null,cnr:null,
@@ -503,6 +515,7 @@ const MATTERS=[
 {id:'m8',title:'Suresh Kumar v. Narain Builders LLP',caseNo:null,cnr:null,
  kind:'Dishonoured cheque of ₹4.6 lakh — notice stage',court:null,complex:null,
  client:['p15'],opp:['p6'],filedOn:null,consultedOn:'2026-07-10',side:'pre-filing',
+ fees:[{on:'2026-07-10',amt:5000,note:'consultation & statutory notice'}],
  limitation:{state:'stated',label:'File the s.138 complaint',by:'2026-09-08',
   basis:'notice despatched 21.07 (within 30 days of return memo dt. 08.07); served 24.07; 15 days ran out 08.08; one month from the cause — s.142(1)(b) NI Act',
   chain:[{label:'Statutory notice despatched',by:'2026-08-07',met:'2026-07-21'}]},
@@ -527,22 +540,28 @@ const MATTERS=[
 {id:'m10',title:'Batra v. Chawla',caseNo:'Diary No. 104729/2026',cnr:null,
  kind:'First appeal against money decree — under registry objections',court:'Delhi High Court (Registry)',complex:'Delhi High Court',
  client:['p18'],opp:['p19'],filedOn:'2026-08-11',side:'we act for the appellant',
- note:'RFA number comes on registration, once objections are cured.',
+ note:'The RFA number comes on registration, once objections are cured.',
  hearings:[],
  refile:{what:'Cure registry objections & refile',by:'2026-08-21',
   born:'objection memo dt. 14.08.2026 — deficient court fee; decree copy illegible'},
  papers:[
-  {kind:'Pleading',label:'Appeal paper-book (as filed)',dt:'2026-08-11',pages:214,side:'us'},
-  {kind:'Order',label:'Registry objection memo dt. 14.08.2026',dt:'2026-08-14',pages:1,side:'court'},
+  {kind:'Pleading',label:'Memo of appeal',dt:'2026-08-11',pages:9,side:'us'},
+  {kind:'Certified copy',label:'Certified copy of impugned judgment dt. 15.06.2026',dt:'2026-07-02',pages:16,side:'court'},
+  {kind:'Order',label:'Decree of the trial court (copy)',dt:'2026-07-02',pages:3,side:'court'},
+  {kind:'Pleading',label:'Application for stay of execution',dt:'2026-08-11',pages:6,side:'us'},
+  {kind:'Client paper',label:'Court-fee challan (deficit to be made good)',dt:'2026-08-11',pages:2,side:'us'},
+  {kind:'Registry objection',label:'Registry objection memo dt. 14.08.2026',dt:'2026-08-14',pages:1,side:'court'},
  ]},
 
 /* ---- the rest of the shelf: cover + next date ---- */
 {id:'s1',title:'Yadav v. New India Assurance',caseNo:'MACT 219/2025',kind:'Motor accident claim',
  court:'MACT, Rohini',complex:'Rohini',client:['p22'],opp:['p23'],filedOn:'2025-02-11',
- hearings:[{on:'2026-08-20',purpose:'Cross-examination of petitioner',presence:{who:'client',name:'Om Prakash Yadav'},outcome:null,next:null}]},
+ hearings:[{on:'2026-08-20',purpose:'Cross-examination of petitioner',presence:{who:'client',name:'Om Prakash Yadav'},outcome:null,next:null,
+   causeList:{status:'mismatch',courtSays:'2026-08-27',note:'shows in the list of Thu 27 Aug, not tomorrow'}}]},
 {id:'s2',title:'Saini v. Saini',caseNo:'HMA 88/2025',kind:'Divorce petition',
  court:'Saket (Family Court-02)',complex:'Saket',client:['p24'],opp:[],oppName:'Harvinder Saini',filedOn:'2025-05-27',
- hearings:[{on:'2026-08-20',purpose:'Mediation — both parties',presence:{who:'client',name:'Rekha Saini'},outcome:null,next:null}]},
+ hearings:[{on:'2026-08-20',purpose:'Mediation — both parties',presence:{who:'client',name:'Rekha Saini'},outcome:null,next:null,
+   causeList:{status:'verified',item:4,room:'Mediation Centre'}}]},
 {id:'s3',title:'Mehra v. Mehra',caseNo:'CS 402/2026',kind:'Injunction suit (family property)',
  court:'Tis Hazari (Civil Judge-11)',complex:'Tis Hazari',client:['p25'],opp:[],oppName:'Suresh Mehra',filedOn:'2026-07-02',
  hearings:[{on:'2026-08-31',purpose:'Written statement',outcome:null,next:null,
@@ -561,11 +580,13 @@ const MATTERS=[
  hearings:[{on:'2026-09-09',purpose:'Reply of respondent',outcome:null,next:null}]},
 {id:'s8',title:'Luthra v. Punjab National Bank',caseNo:'SA 31/2026',kind:'SARFAESI s.17 application',
  court:'DRT-II, Delhi',complex:'DRT',client:[],clientName:'Naveen Luthra',opp:[],oppName:'Punjab National Bank',filedOn:'2026-04-08',
- hearings:[{on:'2026-08-28',purpose:'Reply of the bank',outcome:null,next:null}]},
+ protections:[{label:'Possession of the shop stayed',mode:'condition',born:'order dt. 04.08.2026',
+   condition:{what:'Deposit ₹5,00,000 with the Tribunal',by:'2026-08-28',who:'client'}}],
+ papers:[{kind:'Order',label:'Order dt. 04.08.2026 (possession stayed on condition)',dt:'2026-08-04',pages:2,side:'court'}],
+ hearings:[{on:'2026-08-28',purpose:'Reply of the bank; compliance',outcome:null,next:null}]},
 {id:'s9',title:'Gupta Hardware v. Jain Sanitations',caseNo:'CS (COMM) 77/2026',kind:'Commercial suit — recovery',
  court:'Tis Hazari (Commercial Court)',complex:'Tis Hazari',client:[],clientName:'Gupta Hardware Stores',opp:[],oppName:'Jain Sanitations',filedOn:'2026-01-29',
- hearings:[{on:'2026-08-17',purpose:'Case management',outcome:{code:'adj_nr',label:'Adjourned — not reached'},next:{on:'2026-08-24',purpose:'Case management'}},
-           {on:'2026-08-24',purpose:'Case management',outcome:null,next:null}]},
+ hearings:[{on:'2026-08-17',purpose:'Case management',outcome:{code:'adj_nr',label:'Adjourned — not reached'},next:{on:'2026-08-24',purpose:'Case management'}}]},
 {id:'s10',title:'Rathi v. Rathi',caseNo:'HMA 210/2024',kind:'Divorce petition',
  court:'Rohini (Family Court-01)',complex:'Rohini',client:[],clientName:'Poonam Rathi',opp:[],oppName:'Ajay Rathi',filedOn:'2024-08-13',
  hearings:[{on:'2026-08-21',purpose:'Petitioner’s evidence',outcome:null,next:null}]},
@@ -580,21 +601,25 @@ const MATTERS=[
  hearings:[{on:'2026-09-03',purpose:'Cross of IO',outcome:null,next:null}]},
 {id:'s14',title:'In re: Ahuja (guardianship)',caseNo:'GP 9/2026',kind:'Guardianship petition',
  court:'Tis Hazari (Guardianship Judge)',complex:'Tis Hazari',client:[],clientName:'Neelam Ahuja',opp:[],oppName:'State',filedOn:'2026-01-12',
- hearings:[{on:'2026-08-17',purpose:'Appearance',outcome:{code:'adj_their',label:'Adjourned — their request',detail:'notice to CWC not served'},next:{on:'2026-08-31',purpose:'Report of CWC'}},
-           {on:'2026-08-31',purpose:'Report of CWC',outcome:null,next:null}]},
+ hearings:[{on:'2026-08-17',purpose:'Appearance',outcome:{code:'adj_their',label:'Adjourned — their request',detail:'notice to CWC not served'},next:{on:'2026-08-31',purpose:'Report of CWC'}}]},
 {id:'s15',title:'Bansal v. Khurana',caseNo:'CS 61/2026',kind:'Specific performance',
  court:'Saket (Civil Judge-04)',complex:'Saket',client:[],clientName:'Anil Bansal',opp:[],oppName:'Deepak Khurana',filedOn:'2026-03-05',
  hearings:[{on:'2026-09-15',purpose:'Framing of issues',outcome:null,next:null}]},
 {id:'s16',title:'Grover v. Union of India',caseNo:'WP (C) 1201/2025',kind:'Writ — pension fixation',
  court:'Delhi High Court (Court 2)',complex:'Delhi High Court',client:[],clientName:'S.K. Grover',opp:[],oppName:'Union of India',filedOn:'2025-08-21',
- hearings:[{on:'2026-08-18',purpose:'Counter-affidavit',outcome:{code:'order',label:'Order passed',detail:'counter taken on record; rejoinder in four weeks'},next:{on:'2026-09-10',purpose:'Rejoinder & directions'}},
-           {on:'2026-09-10',purpose:'Rejoinder & directions',outcome:null,next:null}]},
+ hearings:[{on:'2026-08-18',purpose:'Counter-affidavit',outcome:{code:'order',label:'Order passed',detail:'counter taken on record; rejoinder in four weeks'},next:{on:'2026-09-10',purpose:'Rejoinder & directions'}}]},
 {id:'s17',title:'Malik Traders v. Arora Steels',caseNo:'CC 233/2025',kind:'Complaint u/s 138 NI Act',
  court:'Dwarka (MM, NI Act-05)',complex:'Dwarka',client:[],clientName:'Malik Traders',opp:[],oppName:'Arora Steels Pvt. Ltd.',filedOn:'2025-06-17',
  hearings:[{on:'2026-09-07',purpose:'Accused’s statement u/s 351 BNSS',outcome:null,next:null}]},
 {id:'s18',title:'Wadhwa v. DDA',caseNo:'CS 512/2023',kind:'Possession & mesne profits',
  court:'Tis Hazari (ADJ-07)',complex:'Tis Hazari',client:[],clientName:'Karan Wadhwa',opp:['p10'],filedOn:'2023-04-19',
  hearings:[{on:'2026-09-23',purpose:'Defendant’s evidence',outcome:null,next:null}]},
+{id:'s19',title:'Kohli v. Sethi',caseNo:'CS 118/2026',kind:'Recovery suit — at service stage',
+ court:'Rohini (Civil Judge-08)',complex:'Rohini',client:['p27'],opp:['p28'],filedOn:'2026-07-21',
+ hearings:[{on:'2026-08-10',purpose:'Appearance / service',
+   outcome:{code:'order',label:'Order passed',detail:'summons returned unserved — refused; fresh summons with dasti'},
+   next:{on:'2026-09-14',purpose:'Service report'},
+   directions:[{what:'File process fee & take dasti summons',who:'us',by:'2026-08-24',cost:'miss = suit risks dismissal for non-prosecution'}]}]},
 
 /* ---- archived shelf ---- */
 {id:'a1',archived:true,title:'Kamat v. Wagle',caseNo:'RC ARC 118/2023',kind:'Eviction petition (tenancy)',
@@ -618,9 +643,10 @@ const MATTERS=[
  court:'Tis Hazari (Guardianship Judge)',complex:'Tis Hazari',client:[],clientName:'Ravi Kohli',opp:[],oppName:'State',filedOn:'2021-08-19',
  outcome:{result:'withdrawn',label:'Withdrawn — parties reconciled',judgmentOn:'2023-05-04',recordedOn:'2023-05-04'},hearings:[]},
 ];
+let MSEQ=1;
 const byId=id=>MATTERS.find(m=>m.id===id);
 
-/* ---- capture vocabulary: picked for counting, one line for reading ---- */
+/* ---- vocabulary: picked for counting, one line for reading ---- */
 const OUT_PRIMARY=[
  ['adj_nr','Adjourned — not reached'],['adj_their','Adjourned — their request'],
  ['adj_our','Adjourned — our request'],['ev','Evidence recorded'],
@@ -634,22 +660,33 @@ const OUT_MORE=[
  ['exempt','Exemption allowed'],['reserved','Judgment reserved'],
 ];
 const OUT_ALL=Object.fromEntries(OUT_PRIMARY.concat(OUT_MORE));
+const OUT_RED={warrant:1,dind:1,exparte:1};
 const PURP_PRIMARY=['Appearance','Written statement','Reply','Replication','Framing of issues','Evidence','Cross-examination','Final arguments'];
-const PURP_MORE=['Admission / denial','Arguments on application','Notice / summons','Service report','Mediation','Compliance','Objections','Orders / clarification','Judgment'];
+const PURP_MORE=['Admission / denial','Arguments on application','Notice / summons','Service report','Mediation','Compliance','Objections','Orders / clarification','Statement u/s 351 BNSS','Judgment'];
+const PAPER_KINDS=['Order','Pleading','Evidence','Notice','Client paper','Copy application','Certified copy','Registry objection','Bundle','Other'];
+const COMPLEXES=['Tis Hazari','Karkardooma','Saket','Dwarka','Rohini','Delhi High Court','DRT','Other'];
+const APPEAL_FORUMS=[
+ ['District Judge',30,'Art. 116(b), Limitation Act 1963 — 30 days'],
+ ['High Court — first appeal',90,'Art. 116(a), Limitation Act 1963 — 90 days'],
+ ['High Court — LPA',30,'Delhi High Court Act — 30 days'],
+ ['State Consumer Commission',45,'s.41, Consumer Protection Act 2019 — 45 days'],
+ ['Sessions Court (criminal)',30,'Art. 115(b), Limitation Act 1963 — 30 days'],
+];
 /* ============================================================
-   DERIVATIONS — every board below is a query over the records
-   above. A matter has ONE current listing: its earliest hearing
-   still without an outcome, or the next date given at the last
-   closed hearing. Nothing is stored twice.
+   DERIVATIONS — every surface is a query over the records.
+   A matter has ONE current listing: its earliest hearing without
+   an outcome, or the next date given at the last closed hearing.
+   The appeal clock reads the certified-copy PAPERS — the same
+   record, never a second store.
    ============================================================ */
 function cName(m){return m.client&&m.client.length?P(m.client[0]).name:(m.clientName||'—');}
 function oName(m){return m.opp&&m.opp.length?P(m.opp[0]).name:(m.oppName||'—');}
 function open_(){return MATTERS.filter(m=>!m.archived);}
-function closedHearings(m){return (m.hearings||[]).filter(h=>h.outcome);}
+function closedHearings(m){return (m.hearings||[]).filter(h=>h.outcome).sort((a,b)=>a.on<b.on?-1:1);}
 function lastClosed(m){const c=closedHearings(m);return c.length?c[c.length-1]:null;}
 function currentListing(m){
   if(m.outcome)return null;
-  const openH=(m.hearings||[]).find(h=>!h.outcome);
+  const openH=(m.hearings||[]).filter(h=>!h.outcome).sort((a,b)=>a.on<b.on?-1:1)[0];
   if(openH)return{on:openH.on,purpose:openH.purpose,presence:openH.presence,room:openH.room,item:openH.item,h:openH,unrecorded:openH.on<=TODAY};
   const lc=lastClosed(m);
   if(lc&&lc.next)return{on:lc.next.on,purpose:lc.next.purpose,presence:lc.next.presence,virtual:true};
@@ -659,10 +696,9 @@ function listingsOn(date,exceptId){
   const out=[];
   for(const m of open_()){
     if(m.id===exceptId)continue;
-    for(const h of closedHearings(m))if(h.on===date)out.push({m,on:date,purpose:h.purpose,room:h.room,item:h.item,presence:h.presence,outcome:h.outcome,next:h.next});
+    for(const h of closedHearings(m))if(h.on===date)out.push({m,h,on:date,purpose:h.purpose,room:h.room,item:h.item,presence:h.presence,outcome:h.outcome,next:h.next});
     const cur=currentListing(m);
-    if(cur&&cur.on===date&&!(cur.h&&cur.h.outcome))
-      if(!out.some(x=>x.m===m&&x.on===date))out.push({m,...cur});
+    if(cur&&cur.on===date&&!out.some(x=>x.m===m))out.push({m,...cur});
   }
   return out;
 }
@@ -672,63 +708,85 @@ function unrecorded(){
     if(!h.outcome&&h.on<=TODAY)out.push({m,h});
   return out.sort((a,b)=>a.h.on<b.h.on?-1:1);
 }
-function appealLastDay(o){
-  const a=o.appeal;if(!a)return null;
-  const base=addDays(o.judgmentOn,a.windowDays);            // s.12(1): the judgment day itself is excluded
-  const copyDays=a.copyAppliedOn&&a.copyReceivedOn?daysBetweenIncl(a.copyAppliedOn,a.copyReceivedOn):0;
-  return{last:addDays(base,copyDays),copyDays};
-}
 function daysBetweenIncl(a,b){return Math.round((fromISO(b)-fromISO(a))/MS)+1;}
+function copyTime(m){
+  const o=m.outcome;if(!o)return null;
+  const ap=(m.papers||[]).filter(p=>p.kind==='Copy application'&&p.dt>=o.judgmentOn).sort((a,b)=>a.dt<b.dt?-1:1)[0];
+  const rc=(m.papers||[]).filter(p=>p.kind==='Certified copy'&&p.dt>=o.judgmentOn).sort((a,b)=>a.dt<b.dt?-1:1)[0];
+  if(ap&&rc&&rc.dt>=ap.dt)return{applied:ap.dt,received:rc.dt,days:daysBetweenIncl(ap.dt,rc.dt)};
+  if(ap&&!rc)return{applied:ap.dt,received:null,days:0,pending:true};
+  return null;
+}
+function appealLastDay(m){
+  const o=m.outcome;if(!o||!o.appeal)return null;
+  const ct=copyTime(m);
+  const excl=ct&&!ct.pending?ct.days:0;
+  const raw=addDays(addDays(o.judgmentOn,o.appeal.windowDays),excl);
+  const r=rollS4(raw);
+  return{last:r.date,excl,rolled:r.rolled,ct};
+}
 function dueList(){
   const out=[];
   for(const m of MATTERS){
     if(m.archived)continue;
     for(const h of m.hearings||[])for(const d of h.directions||[])
-      out.push({kind:'dir',m,due:d.by,title:d.what,who:d.who,done:d.done,
+      out.push({kind:'dir',m,h,d,due:d.by,title:d.what,who:d.who,done:d.done,
         prov:'Born at the hearing of '+fmt(h.on)+' — never entered twice.',
         cost:d.cost||(d.who==='them'?'their obligation — watch it':d.who==='client'?'the client must act — call ahead':'miss = explaining the delay to the court')});
-    if(m.refile)out.push({kind:'refile',m,due:m.refile.by,title:m.refile.what,who:'us',
+    if(m.refile&&!m.refile.done)out.push({kind:'refile',m,due:m.refile.by,title:m.refile.what,who:'us',
       prov:'Born from the '+m.refile.born+'.',cost:'miss = refiling may count as fresh — limitation trouble'});
     if(m.limitation&&m.limitation.state==='stated'&&!m.limitation.met)
       out.push({kind:'limit',m,due:m.limitation.by,title:m.limitation.label,who:'us',
-        prov:m.limitation.basis,cost:'miss = the complaint becomes time-barred'});
-    if(m.outcome&&m.outcome.appeal&&m.outcome.appeal.deciding==='undecided'){
-      const ap=appealLastDay(m.outcome);
-      out.push({kind:'appeal',m,due:ap.last,title:'Last day to appeal — '+m.outcome.appeal.forum,who:'us',
-        prov:m.outcome.appeal.basis+', from the judgment of '+fmtDot(m.outcome.judgmentOn)+'; '+ap.copyDays+' days of certified-copy time excluded (s.12(2)). Verify the working before filing.',
-        cost:'miss = the appeal becomes time-barred',pill:'client undecided'});
+        prov:m.limitation.basis,cost:'miss = the claim becomes time-barred'});
+    if(m.outcome&&m.outcome.appeal){
+      const a=m.outcome.appeal,ap=appealLastDay(m);
+      if(ap&&(a.decision==='undecided'||a.decision==='dropped')&&ap.last>=TODAY)
+        out.push({kind:'appeal',m,due:ap.last,title:'Last day to appeal — '+a.forum,who:'us',
+          prov:a.basis+', from the judgment of '+fmtDot(m.outcome.judgmentOn)
+            +(ap.excl?'; '+ap.excl+' days of certified-copy time excluded (s.12(2))':'; no certified-copy time on the papers yet')
+            +(ap.rolled?'; last day rolled forward past a holiday (s.4)':'')+'. Verify the working before filing.',
+          cost:'miss = the appeal becomes time-barred',
+          pill:a.decision==='dropped'?'not appealing — watched till expiry':'client undecided'});
     }
     for(const pr of m.protections||[]){
+      if(pr.vacated)continue;
       const cur=currentListing(m);
       if(pr.mode==='till-next-date'&&cur)
         out.push({kind:'prot',m,due:cur.on,title:pr.label+' — operates till this date',who:'us',
           prov:'Carried on the '+pr.born+'.',cost:'miss = the protection lapses with the date'});
+      if(pr.mode==='condition'&&pr.condition&&!pr.condition.met)
+        out.push({kind:'cond',m,due:pr.condition.by,title:pr.condition.what,who:pr.condition.who||'client',
+          prov:'The condition on the '+pr.born+' — the stay lives or dies by it.',
+          cost:'miss = '+pr.label.toLowerCase()+' dissolves'});
     }
   }
   return out.sort((a,b)=>a.due<b.due?-1:1);
 }
 function overdue(){return dueList().filter(i=>i.due<TODAY&&!i.done);}
+function exposedStays(){
+  return open_().flatMap(m=>(m.protections||[]).filter(pr=>pr.mode==='till-next-date'&&!pr.vacated&&!currentListing(m)).map(pr=>({m,pr})));
+}
 function limitationUnknowns(){return open_().filter(m=>m.limitation&&m.limitation.state==='unknown');}
 function callList(){
   const out=[];
   for(const m of open_())for(const h of closedHearings(m))if(h.on===TODAY){
     const p=m.client&&m.client.length?P(m.client[0]):null;
-    out.push({m,name:p?(p.short||p.name):cName(m),phone:p&&p.phone,
+    out.push({m,name:p?(p.short||p.name):cName(m),phone:p&&p.phone,pid:m.client&&m.client[0],
       line:h.outcome.label+(h.outcome.detail?' — '+h.outcome.detail:'')+(h.next?' · next '+fmt(h.next.on):'')});
   }
   return out;
 }
 function clashCheck(dateISO,exceptId){
-  const d=dow(dateISO);
-  if(d===0)return{level:'bad',msg:fmt(dateISO)+' is a Sunday — courts are closed.'};
+  const why=closedWhy(dateISO);
+  if(why)return{level:'bad',msg:fmt(dateISO)+': '+why+'.'};
   const ls=listingsOn(dateISO,exceptId).filter(l=>!l.outcome);
-  const satNote=d===6?' It is a Saturday — confirm the bench sits.':'';
+  const satNote=dow(dateISO)===6?' It is a Saturday — confirm the bench sits.':'';
   if(!ls.length)return{level:'ok',msg:'Nothing else listed '+fmt(dateISO)+' — clear across your files.'+satNote};
   const cx=[...new Set(ls.map(l=>l.m.complex))];
   const names=ls.map(l=>l.m.caseNo+' ('+l.m.complex+')').join(' · ');
   if(cx.length===1)return{level:'ok',msg:ls.length+' already listed '+fmt(dateISO)+' — '+names+'. Same complex — one trip.'+satNote};
   if(cx.length>=3||ls.length>=4)return{level:'bad',msg:ls.length+' already listed '+fmt(dateISO)+' across '+cx.length+' complexes — '+names+'. A split morning; ask for another date while you still can.'+satNote};
-  return{level:'warn',msg:ls.length+' already listed '+fmt(dateISO)+' — '+names+'. Two complexes on one morning — take this date only if you must.'+satNote};
+  return{level:'warn',msg:ls.length+' already listed '+fmt(dateISO)+' — '+names+'. Two complexes on one morning — take it only if you must.'+satNote};
 }
 function searchMatters(q){
   q=q.trim().toLowerCase();if(!q)return null;
@@ -763,7 +821,7 @@ function partyMatters(pid){
   return{asC,asO};
 }
 function conflictHits(typed){
-  const q=typed.trim().toLowerCase();
+  const q=(typed||'').trim().toLowerCase();
   if(q.length<4)return[];
   const out=[];
   for(const[pid,p]of Object.entries(PARTIES)){
@@ -782,242 +840,18 @@ function storyOf(m){
   for(const h of closedHearings(m)){
     const orderSameDay=(m.papers||[]).some(p=>p.kind==='Order'&&p.dt===h.on);
     rows.push({on:h.on,t:h.outcome.label+(h.outcome.detail?' — '+h.outcome.detail:'')+(orderSameDay?' (order on file)':'')+'.'});
+    if(h.moved)rows.push({on:h.moved.on,t:'Listing of '+fmt(h.moved.from)+' moved to '+fmt(h.on)+' by the court — '+h.moved.why+'.'});
   }
+  for(const h of (m.hearings||[]).filter(h=>!h.outcome&&h.moved))
+    rows.push({on:h.moved.on,t:'Listing of '+fmt(h.moved.from)+' moved to '+fmt(h.on)+' by the court — '+h.moved.why+'.'});
   for(const p of m.papers||[]){
-    if(hearingDates.has(p.dt))continue;   // told by that hearing's own line already
+    if(hearingDates.has(p.dt))continue;
     rows.push({on:p.dt,t:p.label+' — on file.'});
   }
+  for(const f of m.fees||[])rows.push({on:f.on,t:inr(f.amt)+' received'+(f.note?' — '+f.note:'')+'.'});
   if(m.outcome)rows.push({on:m.outcome.judgmentOn,t:'Result: '+m.outcome.label+'.'});
   return rows.sort((a,b)=>a.on<b.on?1:-1);
 }
-
-/* ============================================================
-   RENDER
-   ============================================================ */
-let route={t:'today'};
-const S={q:'',mtab:'open',matterTab:{},paperF:{},closed:0,triesGone:false};
-const F={};    /* close-day form state */
-
-function navHTML(){
-  const dot=unrecorded().length?'<span class="ndot"></span>':'';
-  const it=(t,label,svg,extra)=>'<button data-act="nav" data-t="'+t+'" class="'+(route.t===t||(t==='matters'&&['matter','party','new'].includes(route.t))?'on':'')+'">'+svg+'<span>'+label+'</span>'+(extra||'')+'</button>';
-  return it('today','Today','<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v3.5M16 3v3.5"/></svg>',dot)
-   +it('week','Week','<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M9.2 10v10.5M14.9 10v10.5"/></svg>')
-   +it('matters','Matters','<svg viewBox="0 0 24 24"><path d="M4 7.5a2 2 0 0 1 2-2h4l2 2.2h6a2 2 0 0 1 2 2v8.8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/></svg>');
-}
-function pillDays(due){
-  const n=daysUntil(due);
-  const cls=n<0?'red':n<=2?'amber':'plain';
-  const txt=n<0?(Math.abs(n)+(n===-1?' day':' days')+' over'):n===0?'today':n===1?'tomorrow':'in '+n+' days';
-  return'<span class="pill '+cls+' num">'+txt+'</span>';
-}
-function listingRow(l,opts){
-  opts=opts||{};
-  const m=l.m;
-  const chips=[];
-  if(l.presence&&l.presence.who==='client')chips.push('<span class="pill amber">'+esc(l.presence.name)+' must appear</span>');
-  if(l.presence&&l.presence.who==='witness')chips.push('<span class="pill amber">witness: '+esc(l.presence.name)+'</span>');
-  const where=[l.room,l.item?'item '+l.item:null].filter(Boolean).join(' · ');
-  const lc=lastClosed(m);
-  let tail='';
-  if(l.outcome){
-    tail='<div class="done-line">✓ '+esc(l.outcome.label)+(l.outcome.detail?' — '+esc(l.outcome.detail):'')+(l.next?' · next '+fmt(l.next.on):'')+'</div>';
-  }else if(opts.showLast&&lc){
-    tail='<div class="last">Last time ('+fmt(lc.on)+'): <b>'+esc(lc.outcome.label)+'</b>'+(lc.outcome.detail?' — '+esc(lc.outcome.detail):'')+'</div>';
-  }
-  if(!l.outcome&&opts.pending)tail+='<div class="last" style="color:var(--amber-ink)">Not recorded yet — it will take a minute this evening.</div>';
-  return'<button class="row listing" data-act="open-matter" data-id="'+m.id+'">'
-   +'<div class="r1"><span class="title">'+esc(m.title)+'</span><span class="aside caseno num">'+esc(m.caseNo||'consultation')+'</span></div>'
-   +'<div class="where">'+esc(l.purpose||'')+(where?' · '+where:'')+'</div>'
-   +tail+(chips.length?'<div class="chips">'+chips.join('')+'</div>':'')
-   +'</button>';
-}
-function dueRow(i){
-  return'<button class="row due" data-act="open-matter" data-id="'+i.m.id+'">'
-   +'<div class="r1"><span class="due-title">'+esc(i.title)+'</span><span class="aside">'+pillDays(i.due)+(i.pill?' <span class="pill plain">'+esc(i.pill)+'</span>':'')+'</span></div>'
-   +'<div class="meta num">'+esc(i.m.title)+' · '+esc(i.m.caseNo||'pre-filing')+' — by <b>'+fmt(i.due)+'</b></div>'
-   +'<div class="cost">'+esc(i.cost)+'</div>'
-   +'<div class="prov">'+esc(i.prov)+'</div>'
-   +'</button>';
-}
-function groupByComplex(ls){
-  const g=new Map();
-  for(const l of ls){const k=l.m.complex||'—';if(!g.has(k))g.set(k,[]);g.get(k).push(l);}
-  return g;
-}
-function listingsBlock(date,opts){
-  const ls=listingsOn(date);
-  if(!ls.length)return'';
-  const g=groupByComplex(ls);
-  let html='';
-  for(const[cx,arr]of g){
-    html+='<div class="court-group"><div class="court-name">'+esc(cx)
-     +(arr.length>1?'<span class="trip">'+arr.length+' matters — one trip</span>':'')+'</div>'
-     +'<div class="list">'+arr.map(l=>listingRow(l,opts)).join('')+'</div></div>';
-  }
-  return html;
-}
-
-/* ---------------- Today ---------------- */
-function vToday(){
-  const ls=listingsOn(TODAY);
-  const cx=[...new Set(ls.map(l=>l.m.complex))];
-  const un=unrecorded();
-  const od=overdue();
-  const calls=callList();
-  const horizon=dueList().filter(i=>i.due>TODAY&&!i.done).slice(0,5);
-  let h='<div class="page-head"><h1>'+fmtLong(TODAY).replace(' 2026','')+'</h1>'
-   +'<div class="sub">'+ls.length+' listings across '+cx.length+' court complexes'+(cx.length>=3?' — a split morning':'')+'</div></div>';
-  if(un.length){
-    h+='<button class="strip amber" data-act="close-start"><span class="t"><b>'+un.length+' of today’s hearings not recorded yet.</b> One entry each — the boards, dates and story update themselves.</span><span class="go">Close the day →</span></button>';
-  }else{
-    h+='<div class="strip" style="background:var(--green-wash)"><span class="t" style="color:var(--green)"><b>The diary is closed for today.</b> Tomorrow’s board is built from what you recorded.</span></div>';
-  }
-  if(!S.triesGone&&un.length){
-    h+='<div class="tries">'
-     +'<button data-act="close-start">Try: record the '+un.length+' hearings</button>'
-     +'<button data-act="try-date">Check a date the judge offers</button>'
-     +'<button data-act="try-search">Search “wagle”</button>'
-     +'</div>';
-  }
-  h+='<div class="sect"><div class="sect-label">Listed today</div>'+listingsBlock(TODAY,{showLast:true,pending:true})+'</div>';
-  h+='<div class="sect"><div class="sect-label">Check a date</div>'
-   +'<div class="datecheck"><div class="lead">The judge offers a date — is it workable? Ten seconds, before it is written down.</div>'
-   +'<input type="date" id="daischeck" min="2026-08-20" value="">'
-   +'<div id="daisout"></div></div></div>';
-  if(od.length||limitationUnknowns().length){
-    h+='<div class="sect"><div class="sect-label">Needs attention</div><div class="list">'
-     +od.map(dueRow).join('')
-     +limitationUnknowns().map(m=>'<button class="row due" data-act="open-matter" data-id="'+m.id+'">'
-        +'<div class="r1"><span class="due-title" style="color:var(--red)">'+esc(m.limitation.label)+'</span><span class="aside"><span class="pill red">no date yet</span></span></div>'
-        +'<div class="meta">'+esc(m.title)+' · consultation of '+fmt(m.consultedOn)+'</div>'
-        +'<div class="cost">'+esc(m.limitation.basis)+'</div>'
-        +'</button>').join('')
-     +'</div><div class="f-hint" style="margin-top:6px">A missed date stays here until it is dealt with — it does not slip out of sight.</div></div>';
-  }
-  if(horizon.length){
-    h+='<div class="sect"><div class="sect-label">On the horizon<button class="lnk" data-act="nav" data-t="week">Week board →</button></div><div class="list">'
-     +horizon.map(dueRow).join('')+'</div></div>';
-  }
-  if(calls.length){
-    h+='<div class="sect"><div class="sect-label">After court — worth a call</div><div class="list">'
-     +calls.map(c=>'<div class="row"><div class="r1"><span class="due-title">'+esc(c.name)+'</span><span class="aside">'
-       +(c.phone?'<a class="small num" href="tel:+91'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'<span class="faint small">no phone on record</span>')+'</span></div>'
-       +'<div class="meta">'+esc(c.m.title)+' — '+esc(c.line)+'</div>'
-       +'<div style="margin-top:6px"><button class="small" style="color:var(--ox)" data-act="copymsg" data-id="'+c.m.id+'">Copy as message</button></div>'
-       +'</div>').join('')+'</div></div>';
-  }
-  return h;
-}
-
-/* ---------------- a single day board ---------------- */
-function vDay(date){
-  const ls=listingsOn(date);
-  const dues=dueList().filter(i=>i.due===date&&!i.done);
-  const cx=[...new Set(ls.map(l=>l.m.complex))];
-  let h='<div class="backrow"><button data-act="nav" data-t="today">‹ Today</button></div>'
-   +'<div class="page-head"><h1>'+fmtLong(date).replace(' 2026','')+'</h1>'
-   +'<div class="sub">'+(ls.length?ls.length+' listings · '+cx.length+' complex'+(cx.length>1?'es':''):'No listings')+(daysUntil(date)===1?' — pull these files tonight':'')+'</div></div>';
-  if(ls.length)h+='<div class="sect"><div class="sect-label">Listed</div>'+listingsBlock(date,{showLast:true})+'</div>';
-  else h+='<div class="sect"><div class="day-empty">Clear — drafting time.</div></div>';
-  if(dues.length)h+='<div class="sect"><div class="sect-label">Also due</div><div class="list">'+dues.map(dueRow).join('')+'</div></div>';
-  return h;
-}
-
-/* ---------------- Week ---------------- */
-function vWeek(){
-  const days=['2026-08-17','2026-08-18','2026-08-19','2026-08-20','2026-08-21','2026-08-22'];
-  const all=dueList();
-  let h='<div class="page-head"><h1>This week</h1><div class="sub">Mon 17 – Sat 22 Aug — listings and everything else with a cost</div></div>';
-  for(const d of days){
-    const ls=listingsOn(d);
-    const dues=all.filter(i=>i.due===d);
-    const cx=[...new Set(ls.map(l=>l.m.complex))];
-    const isToday=d===TODAY,past=d<TODAY;
-    h+='<div class="day-block"><div class="day-head"><span class="d'+(isToday?' today':'')+'">'+fmt(d)+(isToday?' · today':'')+'</span>'
-     +(cx.length>=3?'<span class="pill amber">split morning — '+cx.length+' courts</span>':'')
-     +(dow(d)===6?'<span class="note">chamber day</span>':'')
-     +'</div>';
-    if(!ls.length&&!dues.length){h+='<div class="day-empty">'+(dow(d)===6?'No listings.':'Clear — drafting time.')+'</div></div>';continue;}
-    if(ls.length)h+='<div class="list">'+ls.map(l=>{
-      const done=l.outcome;
-      return'<button class="row listing" data-act="open-matter" data-id="'+l.m.id+'">'
-       +'<div class="r1"><span class="title">'+esc(l.m.title)+'</span><span class="aside caseno num">'+esc(l.m.complex||'')+'</span></div>'
-       +'<div class="where">'+esc(l.purpose||'')+'</div>'
-       +(done?'<div class="done-line">✓ '+esc(l.outcome.label)+(l.outcome.detail?' — '+esc(l.outcome.detail):'')+'</div>'
-             :(past?'<div class="last" style="color:var(--red)">Not recorded — the diary has a blank line.</div>':''))
-       +((l.presence&&!done)?'<div class="chips"><span class="pill amber">'+esc(l.presence.name)+' must appear</span></div>':'')
-       +'</button>';}).join('')+'</div>';
-    if(dues.length)h+='<div class="list" style="margin-top:8px">'+dues.map(i=>{
-      const missed=i.due<TODAY&&!i.done;
-      return'<button class="row due" data-act="open-matter" data-id="'+i.m.id+'">'
-       +'<div class="r1"><span class="due-title">'+esc(i.title)+'</span><span class="aside">'+(missed?'<span class="pill red">missed</span>':pillDays(i.due))+'</span></div>'
-       +'<div class="meta">'+esc(i.m.title)+' — '+esc(i.cost)+'</div>'
-       +'</button>';}).join('')+'</div>';
-    h+='</div>';
-  }
-  const beyond=all.filter(i=>i.due>'2026-08-22'&&!i.done).slice(0,6);
-  if(beyond.length)h+='<div class="sect"><div class="sect-label">Beyond this week</div><div class="list">'+beyond.map(dueRow).join('')+'</div></div>';
-  return h;
-}
-
-/* ---------------- Matters ---------------- */
-function nextLine(m){
-  if(m.outcome){
-    const ap=m.outcome.appeal&&m.outcome.appeal.deciding==='undecided'?appealLastDay(m.outcome):null;
-    return'<div class="meta"><b>'+esc(m.outcome.label)+'</b> · '+fmtY(m.outcome.judgmentOn)
-      +(ap?' — <span style="color:var(--red)">appeal window till '+fmt(ap.last)+'</span>':'')+'</div>';
-  }
-  const cur=currentListing(m);
-  if(cur){
-    if(cur.on<=TODAY&&cur.unrecorded)return'<div class="meta" style="color:var(--amber-ink)">Listed '+(cur.on===TODAY?'today':fmt(cur.on))+' — not recorded yet</div>';
-    return'<div class="meta">NEXT <b>'+fmt(cur.on)+'</b> · '+esc(cur.purpose||'')+'</div>';
-  }
-  if(m.refile)return'<div class="meta"><b style="color:var(--amber-ink)">'+esc(m.refile.what)+'</b> by <b>'+fmt(m.refile.by)+'</b></div>';
-  if(m.limitation&&m.limitation.state==='unknown')return'<div class="meta" style="color:var(--red)">Limitation not worked out yet</div>';
-  if(m.limitation&&m.limitation.state==='stated'&&!m.limitation.met)return'<div class="meta">'+esc(m.limitation.label)+' by <b>'+fmt(m.limitation.by)+'</b></div>';
-  return'<div class="meta faint">No date on the horizon</div>';
-}
-function matterRow(m,why){
-  return'<button class="row" data-act="open-matter" data-id="'+m.id+'">'
-   +'<div class="r1"><span class="title">'+esc(m.title)+'</span><span class="aside caseno num small quiet">'+esc(m.caseNo||'consultation')+'</span></div>'
-   +'<div class="meta">'+esc(m.court||m.kind)+' · for '+esc(cName(m))+'</div>'
-   +nextLine(m)
-   +(why?'<div class="why">Match — '+esc(why)+'</div>':'')
-   +'</button>';
-}
-function vMatters(){
-  const opens=open_(),arch=MATTERS.filter(m=>m.archived);
-  let h='<div class="page-head"><h1>Matters</h1></div>'
-   +'<div class="searchbar"><input id="msearch" placeholder="Party, case no., court, paper, year…" value="'+esc(S.q)+'" autocomplete="off"></div>';
-  const hits=searchMatters(S.q);
-  if(hits){
-    h+='<div class="sect"><div class="sect-label">'+hits.length+' found — the whole shelf, archived included</div>';
-    h+=hits.length?'<div class="list">'+hits.map(x=>matterRow(x.m,x.why)).join('')+'</div>'
-      :'<div class="day-empty">Nothing matches. The search reads parties, case numbers, courts, papers, results and years.</div>';
-    h+='</div>';
-    return h;
-  }
-  h+='<div class="mtabs">'
-   +'<button data-act="mtab" data-v="open" class="'+(S.mtab==='open'?'on':'')+'">On the shelf '+opens.length+'</button>'
-   +'<button data-act="mtab" data-v="arch" class="'+(S.mtab==='arch'?'on':'')+'">Archived '+arch.length+'</button>'
-   +'<button class="newbtn" data-act="nav" data-t="new">+ New matter</button>'
-   +'</div>';
-  const rows=(S.mtab==='open'?opens:arch);
-  const sortKey=m=>{
-    const c=currentListing(m);if(c)return c.on;
-    if(m.refile)return m.refile.by;
-    if(m.outcome&&m.outcome.appeal&&m.outcome.appeal.deciding==='undecided')return appealLastDay(m.outcome).last;
-    if(m.limitation&&m.limitation.state==='stated')return m.limitation.by;
-    if(m.limitation&&m.limitation.state==='unknown')return '0000';
-    return'9999';
-  };
-  const sorted=[...rows].sort((a,b)=>{const ka=sortKey(a),kb=sortKey(b);return ka<kb?-1:1;});
-  h+='<div class="sect"><div class="list">'+sorted.map(m=>matterRow(m)).join('')+'</div></div>';
-  return h;
-}
-
-/* ---------------- Matter folder ---------------- */
 function copyMsgText(m){
   const lc=lastClosed(m),cur=currentListing(m);
   let t=m.title+' — '+(m.caseNo||'consultation')+(m.court?', '+m.court:'')+'.';
@@ -1026,230 +860,384 @@ function copyMsgText(m){
   if(m.outcome)t+='\nResult: '+m.outcome.label+' ('+fmtDot(m.outcome.judgmentOn)+').';
   return t;
 }
-function vMatter(id){
-  const m=byId(id);if(!m)return'<div class="page-head"><h1>Not found</h1></div>';
-  const tab=S.matterTab[id]||'diary';
-  const cur=currentListing(m);
-  let h='<div class="backrow"><button data-act="back">‹ Back</button></div>';
-  h+='<div class="cover"><h1>'+esc(m.title)+'</h1><div class="kindline">'+esc(m.kind)+(m.side?' · '+esc(m.side):'')+'</div><dl>';
-  h+='<dt>Parties</dt><dd>'+partyLink(m,'client')+' <span class="faint">vs</span> '+partyLink(m,'opp')+'</dd>';
-  if(m.caseNo)h+='<dt>Case no.</dt><dd class="num">'+esc(m.caseNo)+'</dd>';
-  if(m.cnr)h+='<dt>CNR</dt><dd class="num">'+esc(m.cnr)+'</dd>';
-  if(m.court)h+='<dt>Court</dt><dd>'+esc(m.court)+'</dd>';
-  h+='<dt>'+(m.filedOn?'Filed':'Consulted')+'</dt><dd class="num">'+(m.filedOn?fmtY(m.filedOn):fmtY(m.consultedOn))+'</dd>';
-  if(cur&&!m.outcome)h+='<dt>Next date</dt><dd class="num"><b>'+fmt(cur.on)+'</b> · '+esc(cur.purpose||'')+(cur.unrecorded&&cur.on<=TODAY?' <span class="pill amber">to record</span>':'')+'</dd>';
-  h+='</dl>';
-  if(m.note)h+='<div class="f-hint" style="margin-top:8px">'+esc(m.note)+'</div>';
-  if(m.outcome){
-    const ap=m.outcome.appeal,apc=ap?appealLastDay(m.outcome):null;
-    h+='<div class="result-line"><b>'+esc(m.outcome.label)+'</b> — judgment of '+fmt(m.outcome.judgmentOn)+', recorded '+fmt(m.outcome.recordedOn)+'.'
-     +(ap&&ap.deciding==='undecided'&&apc?'<br>Appeal to the '+esc(ap.forum)+' possible till <b>'+fmt(apc.last)+'</b> ('+daysUntil(apc.last)+' days). Client undecided — the clock runs regardless.':'')
-     +'</div>';
+
+/* ============================================================
+   STATE & ROUTING — center pane and file pane are independent.
+   ============================================================ */
+const S={center:{t:'day',date:TODAY},file:null,mtab:'open',q:'',ftab:{},pf:{},pen:'advocate'};
+const F={};      /* close-day form */
+const SH={};     /* sheet form scratch */
+function centerHash(c){
+  switch(c.t){case'day':return'd/'+c.date;case'week':return'w';case'shelf':return'shelf';
+    case'close':return'close';case'new':return'new';default:return'd/'+TODAY;}
+}
+function setRoute(center,file){
+  if(center)S.center=center;
+  if(file!==undefined)S.file=file;
+  const h='#/'+centerHash(S.center)+(S.file?'/f/'+S.file.t+':'+S.file.id:'');
+  if(location.hash===h)render();else location.hash=h;
+}
+function parseHash(){
+  const raw=(location.hash||'').replace(/^#\/?/,'');
+  const[cpart,fpart]=raw.split('/f/');
+  const p=(cpart||'').split('/');
+  let c={t:'day',date:TODAY};
+  switch(p[0]){
+    case'd':c={t:'day',date:p[1]||TODAY};break;
+    case'w':c={t:'week'};break;
+    case'shelf':c={t:'shelf'};break;
+    case'close':c={t:'close'};break;
+    case'new':c={t:'new'};break;
   }
-  h+='<div class="cover-actions"><button data-act="copymsg" data-id="'+m.id+'">Copy as message</button>'
-   +(!m.outcome&&m.filedOn?'<button class="muted-act" data-act="ended-info">Record how it ended</button>':'')
-   +'</div></div>';
-  h+='<div class="tabs">'+['diary','dates','papers','story'].map(t=>'<button data-act="mtab2" data-id="'+id+'" data-v="'+t+'" class="'+(tab===t?'on':'')+'">'+({diary:'Diary',dates:'Dates',papers:'Papers',story:'Story'})[t]+'</button>').join('')+'</div>';
-  h+={diary:tabDiary,dates:tabDates,papers:tabPapers,story:tabStory}[tab](m);
-  return h;
-}
-function partyLink(m,side){
-  const ids=side==='client'?(m.client||[]):(m.opp||[]);
-  if(ids.length)return ids.map(pid=>'<button class="party-btn" data-act="party" data-id="'+pid+'">'+esc(P(pid).name)+'</button>').join(', ');
-  return esc(side==='client'?(m.clientName||'—'):(m.oppName||'—'));
-}
-function tabDiary(m){
-  const hs=[...(m.hearings||[])].sort((a,b)=>a.on<b.on?1:-1);
-  if(!hs.length)return'<div class="sect"><div class="day-empty">No hearings yet — '+(m.filedOn?'awaiting first listing.':'not filed yet.')+'</div></div>';
-  const un=unrecorded().filter(u=>u.m.id===m.id);
-  let h='<div class="sect">';
-  if(un.length)h+='<button class="strip amber" style="margin-top:0" data-act="close-start" data-mid="'+m.id+'"><span class="t"><b>Today’s hearing is not recorded.</b></span><span class="go">Record it →</span></button>';
-  h+='<div class="list" style="margin-top:12px">';
-  let newestClosed=true;
-  for(const hr of hs){
-    if(!hr.outcome){
-      if(hr.on>TODAY)h+='<div class="diary-entry"><div class="dline"><span class="don num">'+fmt(hr.on)+'</span><span class="purp">'+esc(hr.purpose||'')+'</span></div><div class="what quiet">Listed — coming up.</div></div>';
-      else h+='<div class="diary-entry blank"><div class="dline"><span class="don num">'+fmt(hr.on)+'</span><span class="purp">'+esc(hr.purpose||'')+'</span></div><div class="what">No outcome recorded — the diary has a blank line.</div></div>';
-      continue;
-    }
-    let e='<div class="diary-entry"><div class="dline"><span class="don num">'+fmtY(hr.on)+'</span><span class="purp">'+esc(hr.purpose||'')+'</span></div>';
-    e+='<div class="what">'+esc(hr.outcome.label)+(hr.outcome.detail?' <span class="det">— '+esc(hr.outcome.detail)+'</span>':'')+'</div>';
-    if(hr.next&&newestClosed)e+='<div class="next-line">→ next <b>'+fmt(hr.next.on)+'</b> · '+esc(hr.next.purpose||'')+(hr.next.presence?' · '+esc(hr.next.presence.name)+' to appear':'')+'</div>';
-    for(const d of hr.directions||[])
-      e+='<div class="dirline">'+(d.done?'<span class="tick">✓</span> ':'◻ ')+esc(d.what)+' — '+(d.who==='us'?'we act':d.who==='them'?'they act':'client acts')+' by '+fmt(d.by)+'</div>';
-    e+='</div>';h+=e;newestClosed=false;
-  }
-  h+='</div><div class="f-hint" style="margin-top:8px">Each entry was written once, at the hearing. The boards, dates and story are built from these lines.</div></div>';
-  return h;
-}
-function tabDates(m){
-  let rows='';
-  if(m.limitation&&m.limitation.state==='stated'){
-    for(const c of m.limitation.chain||[])
-      rows+='<div class="row due"><div class="r1"><span class="due-title" style="color:var(--green)">✓ '+esc(c.label)+'</span><span class="aside"><span class="pill green num">done '+fmtDot(c.met)+'</span></span></div><div class="prov">Was due by '+fmt(c.by)+' — met in time.</div></div>';
-    if(!m.limitation.met)rows+='<div class="row due"><div class="r1"><span class="due-title">'+esc(m.limitation.label)+'</span><span class="aside">'+pillDays(m.limitation.by)+'</span></div>'
-      +'<div class="meta num">by <b>'+fmt(m.limitation.by)+'</b></div>'
-      +'<div class="cost">miss = the complaint becomes time-barred</div><div class="prov">'+esc(m.limitation.basis)+'</div></div>';
-  }
-  if(m.limitation&&m.limitation.state==='unknown')
-    rows+='<div class="row due"><div class="r1"><span class="due-title" style="color:var(--red)">'+esc(m.limitation.label)+'</span><span class="aside"><span class="pill red">no date yet</span></span></div><div class="cost">'+esc(m.limitation.basis)+'</div><div class="prov">This stays red until you state the date — the app never invents one.</div></div>';
-  for(const i of dueList().filter(i=>i.m.id===m.id&&['dir','refile','prot','appeal'].includes(i.kind)))
-    rows+='<div class="row due"><div class="r1"><span class="due-title">'+esc(i.title)+'</span><span class="aside">'+(i.due<TODAY?'<span class="pill red">missed</span>':pillDays(i.due))+(i.pill?' <span class="pill plain">'+esc(i.pill)+'</span>':'')+'</span></div>'
-     +'<div class="meta num">by <b>'+fmt(i.due)+'</b>'+(i.who==='them'?' · their obligation':i.who==='client'?' · client must act':'')+'</div>'
-     +'<div class="cost">'+esc(i.cost)+'</div><div class="prov">'+esc(i.prov)+'</div></div>';
-  const cur=currentListing(m);
-  if(cur&&!cur.unrecorded)rows+='<div class="row due"><div class="r1"><span class="due-title">Next hearing — '+esc(cur.purpose||'')+'</span><span class="aside">'+pillDays(cur.on)+'</span></div><div class="meta num"><b>'+fmt(cur.on)+'</b>'+(cur.presence?' · '+esc(cur.presence.name)+' to appear':'')+'</div><div class="prov">Born at the last hearing — never entered twice.</div></div>';
-  if(!rows)rows='<div class="row"><div class="day-empty" style="padding:0">Nothing on the clock for this file.</div></div>';
-  return'<div class="sect"><div class="list">'+rows+'</div>'
-   +'<div class="f-hint" style="margin-top:8px">This page collects — it never asks. Every date above was born inside a hearing, a paper, a result or the cover page.</div></div>';
-}
-function tabPapers(m){
-  const ps=[...(m.papers||[])].sort((a,b)=>a.dt<b.dt?1:-1);
-  if(!ps.length)return'<div class="sect"><div class="day-empty">No papers on file yet.</div></div>';
-  const kinds=['All',...new Set(ps.map(p=>p.kind))];
-  const f=S.paperF[m.id]||'All';
-  const show=ps.filter(p=>f==='All'||p.kind===f);
-  return'<div class="sect"><div class="kindf">'+kinds.map(k=>'<button data-act="pf" data-id="'+m.id+'" data-v="'+esc(k)+'" class="'+(f===k?'on':'')+'">'+esc(k)+(k!=='All'?' '+ps.filter(p=>p.kind===k).length:'')+'</button>').join('')+'</div>'
-   +'<div class="list">'+show.map(p=>'<div class="row paper-row"><div class="r1"><span class="plabel">'+esc(p.label)+'</span></div>'
-     +'<div class="pmeta num">'+esc(p.kind)+' · dt. '+fmtDot(p.dt)+' · '+p.pages+' pp · '+({us:'filed by us',them:'filed by them',court:'issued by the court',client:'from the client'})[p.side]
-     +(p.original?' · <b style="color:var(--ox-deep)">◉ original in office</b>':'')+'</div></div>').join('')+'</div>'
-   +'<div class="f-hint" style="margin-top:8px">Every paper carries its kind, its own date and whose it is — filter to Orders and the right one is in hand before the judge finishes the question.</div></div>';
-}
-function tabStory(m){
-  const rows=storyOf(m);
-  if(!rows.length)return'<div class="sect"><div class="day-empty">The story starts with the first record.</div></div>';
-  return'<div class="sect"><div class="list">'+rows.map(r=>'<div class="story-row"><span class="sd num">'+fmtDot(r.on)+'</span><span>'+esc(r.t)+'</span></div>').join('')+'</div>'
-   +'<div class="f-hint" style="margin-top:8px">Stitched from the diary, the papers and the cover — nothing here was written separately, and nothing appears twice.</div></div>';
+  let f=null;
+  if(fpart){const[t,id]=fpart.split(':');if(t&&id)f={t,id};}
+  return{c,f};
 }
 
-/* ---------------- Party ---------------- */
-function vParty(pid){
-  const p=P(pid),{asC,asO}=partyMatters(pid);
-  let h='<div class="backrow"><button data-act="back">‹ Back</button></div>'
-   +'<div class="party-head"><h1>'+esc(p.name)+'</h1><div class="sub">'
-   +(p.phone?'<a href="tel:+91'+p.phone.replace(/\s/g,'')+'" class="num">'+p.phone+'</a> · ':'')
-   +asC.length+' as client · '+asO.length+' as opposing party</div></div>';
-  if(p.stand)h+='<div class="strip" style="background:var(--card);border:1px solid var(--line)"><span class="t"><b>Stands on record:</b> '+esc(p.stand)+'</span></div>';
-  if(asC.length)h+='<div class="sect"><div class="sect-label">As client</div><div class="list">'+asC.map(m=>matterRow(m)).join('')+'</div></div>';
-  if(asO.length)h+='<div class="sect"><div class="sect-label">As opposing party</div><div class="list">'+asO.map(m=>matterRow(m)).join('')+'</div></div>';
+/* ============================================================
+   SPINE + PHONE NAV
+   ============================================================ */
+function spineDays(){
+  const days=[];
+  for(let i=-2;i<=13;i++){const d=addDays('2026-08-17',i);if(dow(d)!==0)days.push(d);}
+  return days;
+}
+function spineHTML(){
+  const un=unrecorded().length;
+  const c=S.center;
+  let h='<div class="sp-brand">Legal<b>Pen</b></div>'
+   +'<div class="sp-sub">The diary that keeps itself.<br>A fictional Delhi practice · demo</div>';
+  h+='<div class="sp-sec lbl">The register</div>';
+  for(const d of spineDays()){
+    const ls=listingsOn(d).length;
+    const od=dueList().filter(i=>i.due===d&&!i.done).length;
+    const isPastMiss=overdue().some(i=>i.due===d);
+    let marks='';
+    for(let i=0;i<Math.min(ls,4);i++)marks+='•';
+    if(od)marks+='<span class="r">'+(isPastMiss?'●':'•')+'</span>';
+    h+='<button class="sday'+(d===TODAY?' today':'')+(c.t==='day'&&c.date===d?' on':'')+'" data-act="day" data-v="'+d+'">'
+     +'<span class="num">'+dnum(d)+'</span><span class="dw">'+DWS[dow(d)]+(dnum(d)<=2?' '+MO[fromISO(d).getMonth()]:'')+'</span>'
+     +'<span class="marks">'+marks+'</span></button>';
+  }
+  h+='<div class="sp-gap"></div>';
+  h+='<button class="sp-link'+(c.t==='week'?' on':'')+'" data-act="week">This week</button>';
+  h+='<button class="sp-link'+(c.t==='shelf'?' on':'')+'" data-act="shelf">The shelf<span class="cnt">'+open_().length+' open · '+MATTERS.filter(m=>m.archived).length+' archived</span></button>';
+  h+='<button class="sp-link'+(c.t==='close'?' on':'')+'" data-act="close-start">Close the day'+(un?'<span class="cnt" style="color:var(--red)">'+un+' to record</span>':'')+'</button>';
+  h+='<button class="sp-link'+(c.t==='new'?' on':'')+'" data-act="new">+ New matter</button>';
+  h+='<div class="sp-foot"><div class="lbl" style="margin-bottom:2px">Who holds the pen</div>'
+   +'<div class="pen-tog"><button data-act="pen" data-v="advocate" class="'+(S.pen==='advocate'?'on':'')+'">Advocate</button>'
+   +'<button data-act="pen" data-v="munshi" class="'+(S.pen==='munshi'?'on':'')+'">Munshi</button></div>'
+   +'Wednesday 19 August 2026 — everything here is invented; refresh and it resets.<br>'
+   +'<button data-act="about">About & what to try</button> · <button data-act="reset">Reset</button></div>';
   return h;
 }
-/* ---------------- Close the day ---------------- */
+function phnavHTML(){
+  const c=S.center;
+  const un=unrecorded().length;
+  return'<button data-act="day" data-v="'+TODAY+'" class="'+(c.t==='day'?'on':'')+'"><span class="d">'+dnum(TODAY)+'</span>Today'+(un?' ·':'')+'</button>'
+   +'<button data-act="week" class="'+(c.t==='week'?'on':'')+'"><span class="d">§</span>Week</button>'
+   +'<button data-act="shelf" class="'+(['shelf','new'].includes(c.t)?'on':'')+'"><span class="d">≡</span>Shelf</button>';
+}
+
+/* ============================================================
+   CENTER VIEWS
+   ============================================================ */
+function stampFor(o){
+  return'<span class="stamp'+(OUT_RED[o.code]?' red':'')+'">'+esc(o.label)+'</span>';
+}
+function listingRow(l,opts){
+  opts=opts||{};
+  const m=l.m;
+  const where=[l.room,l.item?'item '+l.item:null].filter(Boolean).join(' · ');
+  const lc=lastClosed(m);
+  let inner='<div class="t1"><span class="cause">'+esc(m.title)+'</span><span class="cno">'+esc(m.caseNo||'consultation')+'</span></div>'
+   +'<div class="l2">'+esc(l.purpose||'')+(where?' — '+where:'')+'</div>';
+  if(l.outcome){
+    inner+='<div class="stamps">'+stampFor(l.outcome)+(l.outcome.detail?'<span class="small mut">'+esc(l.outcome.detail)+'</span>':'')+'</div>'
+     +(l.next?'<div class="l3">→ next <b>'+fmt(l.next.on)+'</b> · '+esc(l.next.purpose||'')+'</div>':'');
+  }else{
+    if(opts.showLast&&lc)inner+='<div class="l3">Last time ('+fmt(lc.on)+'): <b>'+esc(lc.outcome.label)+'</b>'+(lc.outcome.detail?' — '+esc(lc.outcome.detail):'')+'</div>';
+    if(opts.pending)inner+='<div class="l3 red">Not recorded yet — a minute this evening.</div>';
+    if(l.presence)inner+='<div class="l3"><span class="rdot">●</span> '+esc(l.presence.name)+' must appear</div>';
+    if(opts.causeCheck&&l.h){
+      const cl=l.h.causeList;
+      if(!cl)inner+='<div class="causeline">Cause list: not checked <button class="act" data-act="cl-ok" data-id="'+m.id+'" data-v="'+l.h.on+'">verified ✓</button><button class="act red" data-act="cl-mis" data-id="'+m.id+'" data-v="'+l.h.on+'">list differs</button></div>';
+      else if(cl.status==='verified')inner+='<div class="causeline">Cause list ✓ verified'+(cl.item?' — item '+cl.item:'')+(cl.room?', '+esc(cl.room):'')+'</div>';
+      else if(cl.status==='mismatch')inner+='<div class="causeline mis">Court’s list says <b>'+fmt(cl.courtSays)+'</b> — diary says '+fmt(l.h.on)
+        +' <button class="act red" data-act="cl-accept" data-id="'+m.id+'" data-v="'+l.h.on+'">court is right — move it</button>'
+        +'<button class="act" data-act="cl-keep" data-id="'+m.id+'" data-v="'+l.h.on+'">diary is right</button></div>';
+    }
+  }
+  return'<button class="regrow" data-act="open-m" data-id="'+m.id+'">'+inner+'</button>';
+}
+function dueRow(i,opts){
+  opts=opts||{};
+  const n=daysUntil(i.due);
+  const missed=i.due<TODAY&&!i.done;
+  const dleft=missed?'<span class="dleft hot">'+Math.abs(n)+(n===-1?' day':' days')+' over</span>'
+    :'<span class="dleft'+(n<=2?' hot':'')+'">'+(n===0?'today':n===1?'tomorrow':'in '+n+' days')+'</span>';
+  return'<button class="duerow" data-act="open-m" data-id="'+i.m.id+'">'
+   +'<div class="t1"><span class="what">'+(missed?'<span class="rdot">●</span> ':'')+esc(i.title)+'</span>'+dleft+'</div>'
+   +'<div class="of">'+esc(i.m.title)+' · '+esc(i.m.caseNo||'pre-filing')+' — by <b>'+fmt(i.due)+'</b>'
+   +(i.who==='them'?' · their obligation':i.who==='client'?' · <span class="red">client must act</span>':'')
+   +(i.pill?' · <span class="stamp">'+esc(i.pill)+'</span>':'')+'</div>'
+   +'<div class="cost">'+esc(i.cost)+'</div>'
+   +(opts.prov!==false?'<div class="prov">'+esc(i.prov)+'</div>':'')
+   +'</button>';
+}
+function groupedListings(date,opts){
+  const ls=listingsOn(date);
+  if(!ls.length)return'';
+  const g=new Map();
+  for(const l of ls){const k=l.m.complex||'—';if(!g.has(k))g.set(k,[]);g.get(k).push(l);}
+  let h='';
+  for(const[cx,arr]of g){
+    h+='<div class="courtline"><span class="c">'+esc(cx)+'</span>'+(arr.length>1?'<span class="trip">'+arr.length+' matters — one trip</span>':'')+'</div>'
+     +arr.map(l=>listingRow(l,opts)).join('');
+  }
+  return h;
+}
+function vDay(date){
+  const ls=listingsOn(date);
+  const cx=[...new Set(ls.map(l=>l.m.complex))];
+  const isToday=date===TODAY,isTom=date===addDays(TODAY,1),past=date<TODAY;
+  const un=unrecorded();
+  const hol=closedWhy(date);
+  let sub=ls.length?(ls.length+' listings · '+cx.length+' court complex'+(cx.length>1?'es':'')+(cx.length>=3?' — a split morning':'')):
+    (hol?hol:(dow(date)===6?'Chamber day — no listings':'Clear — drafting time'));
+  if(isTom&&ls.length)sub+=' — pull these files tonight';
+  let h='<div class="dayhead'+(isToday?' isred':'')+'"><span class="dn">'+dnum(date)+'</span>'
+   +'<span class="dmeta"><div class="dw">'+DW[dow(date)]+' · '+MO[fromISO(date).getMonth()]+' 2026'+(isToday?' · today':'')+'</div>'
+   +'<div class="sub">'+esc(sub)+'</div></span></div>';
+  if(isToday){
+    if(un.length)h+='<button class="strip" data-act="close-start"><span class="t"><b>'+un.length+' of today’s hearings not recorded.</b> One entry each — every page updates itself.</span><span class="go act red">Close the day →</span></button>';
+    else h+='<div class="strip ok"><span class="t"><b>The diary is closed for today.</b> Tomorrow’s board is built from what you recorded.</span></div>';
+  }
+  if(ls.length)h+='<div class="rule-head"><span class="lbl">Listed'+(isToday?' today':'')+'</span></div>'+groupedListings(date,{showLast:true,pending:isToday||past,causeCheck:isTom});
+  const dues=dueList().filter(i=>i.due===date);
+  if(dues.length)h+='<div class="rule-head"><span class="lbl">Also due</span></div>'+dues.map(i=>dueRow(i)).join('');
+  if(isToday){
+    h+='<div class="rule-head"><span class="lbl">Check a date</span></div>'
+     +'<div class="datecheck"><div class="checkbox-line" style="margin:2px 0 8px">The judge offers a date — workable? Ten seconds, before it is written down.</div>'
+     +'<input type="date" id="daischeck"><div id="daisout"></div></div>';
+    const od=overdue(),lu=limitationUnknowns(),ex=exposedStays();
+    if(od.length||lu.length||ex.length){
+      h+='<div class="rule-head attnhead"><span class="lbl" style="color:var(--red)">Needs attention</span></div><div class="attn">'
+       +od.map(i=>dueRow(i)).join('')
+       +lu.map(m=>'<button class="duerow" data-act="open-m" data-id="'+m.id+'">'
+          +'<div class="t1"><span class="what"><span class="rdot">●</span> '+esc(m.limitation.label)+'</span><span class="dleft hot">no date yet</span></div>'
+          +'<div class="of">'+esc(m.title)+' · consultation of '+fmt(m.consultedOn)+'</div>'
+          +'<div class="cost">'+esc(m.limitation.basis)+'</div></button>').join('')
+       +ex.map(x=>'<button class="duerow" data-act="open-m" data-id="'+x.m.id+'">'
+          +'<div class="t1"><span class="what"><span class="rdot">●</span> '+esc(x.pr.label)+' has no next date on record</span><span class="dleft hot">exposed</span></div>'
+          +'<div class="of">'+esc(x.m.title)+' — a till-next-date protection with no date to ride on</div></button>').join('')
+       +'</div><div class="footnote">A missed date stays here until it is dealt with — it does not slip out of sight.</div>';
+    }
+    const horizon=dueList().filter(i=>i.due>TODAY&&!i.done).slice(0,5);
+    if(horizon.length)h+='<div class="rule-head"><span class="lbl">On the horizon</span><button class="act" data-act="week">week board</button></div>'
+      +horizon.map(i=>dueRow(i)).join('');
+    const calls=callList();
+    if(calls.length)h+='<div class="rule-head"><span class="lbl">After court — worth a call</span></div>'
+      +calls.map(c=>'<div class="duerow" style="cursor:default"><div class="t1"><span class="what">'+esc(c.name)+'</span>'
+        +'<span class="dleft">'+(c.phone?'<a href="tel:+91'+c.phone.replace(/\s/g,'')+'" style="color:var(--ink)">'+c.phone+'</a>':'no phone on record')+'</span></div>'
+        +'<div class="of">'+esc(c.m.title)+' — '+esc(c.line)+'</div>'
+        +'<div style="margin-top:7px;display:flex;gap:14px"><button class="act" data-act="copymsg" data-id="'+c.m.id+'">Copy as message</button>'
+        +'<button class="act" data-act="open-m" data-id="'+c.m.id+'">open file</button></div></div>').join('');
+  }
+  if(!ls.length&&!dues.length&&!isToday)h+='<div class="footnote" style="margin-top:26px">'+(hol?hol+'.':'Nothing listed, nothing due.')+'</div>';
+  return h;
+}
+function vWeek(){
+  const days=['2026-08-17','2026-08-18','2026-08-19','2026-08-20','2026-08-21','2026-08-22'];
+  const all=dueList();
+  let h='<div class="dayhead"><span class="dn">17<span style="font-size:26px">–22</span></span>'
+   +'<span class="dmeta"><div class="dw">This week · August 2026</div>'
+   +'<div class="sub">Listings and everything else with a cost — Mon to Sat</div></span></div>';
+  for(const d of days){
+    const ls=listingsOn(d);
+    const dues=all.filter(i=>i.due===d);
+    const cx=[...new Set(ls.map(l=>l.m.complex))];
+    h+='<div class="rule-head"><span class="lbl dark">'+fmt(d)+(d===TODAY?' · today':'')+'</span>'
+     +(cx.length>=3?'<span class="tiny red">split morning — '+cx.length+' courts</span>':'')
+     +(dow(d)===6?'<span class="tiny faint">chamber day</span>':'')+'</div>';
+    if(!ls.length&&!dues.length){h+='<div class="footnote" style="margin-top:6px">'+(dow(d)===6?'No listings.':'Clear — drafting time.')+'</div>';continue;}
+    h+=groupedListings(d,{showLast:false,pending:d<=TODAY});
+    h+=dues.map(i=>dueRow(i,{prov:false})).join('');
+  }
+  const beyond=all.filter(i=>i.due>'2026-08-22'&&!i.done).slice(0,6);
+  if(beyond.length)h+='<div class="rule-head"><span class="lbl">Beyond this week</span></div>'+beyond.map(i=>dueRow(i)).join('');
+  return h;
+}
+function shelfLine(m){
+  if(m.outcome){
+    const a=m.outcome.appeal,ap=a?appealLastDay(m):null;
+    return'<div class="l2"><span class="stamp'+(m.outcome.result==='lost'?' red':'')+'">'+esc(m.outcome.result)+'</span> '
+      +esc(m.outcome.label)+' · '+fmtY(m.outcome.judgmentOn)
+      +(ap&&(a.decision==='undecided')&&ap.last>=TODAY?' — <span class="red">appeal window till '+fmt(ap.last)+'</span>':'')+'</div>';
+  }
+  const cur=currentListing(m);
+  if(cur){
+    if(cur.unrecorded)return'<div class="l2 red">Listed '+(cur.on===TODAY?'today':fmt(cur.on))+' — not recorded yet</div>';
+    return'<div class="l2">NEXT <b>'+fmt(cur.on)+'</b> · '+esc(cur.purpose||'')+'</div>';
+  }
+  if(m.refile)return'<div class="l2"><b class="red">'+esc(m.refile.what)+'</b> by <b>'+fmt(m.refile.by)+'</b></div>';
+  if(m.limitation&&m.limitation.state==='unknown')return'<div class="l2 red">Limitation not worked out yet</div>';
+  if(m.limitation&&m.limitation.state==='stated'&&!m.limitation.met)return'<div class="l2">'+esc(m.limitation.label)+' by <b>'+fmt(m.limitation.by)+'</b></div>';
+  return'<div class="l2 faint">No date on the horizon</div>';
+}
+function shelfRow(m,why){
+  return'<button class="regrow" data-act="open-m" data-id="'+m.id+'">'
+   +'<div class="t1"><span class="cause">'+esc(m.title)+'</span><span class="cno">'+esc(m.caseNo||'consultation')+'</span></div>'
+   +'<div class="l2 mut">'+esc(m.court||m.kind)+' · for '+esc(cName(m))+'</div>'
+   +shelfLine(m)
+   +(why?'<div class="why">Match — '+esc(why)+'</div>':'')
+   +'</button>';
+}
+function sortKey(m){
+  const c=currentListing(m);if(c)return c.on;
+  if(m.refile)return m.refile.by;
+  if(m.outcome&&m.outcome.appeal&&m.outcome.appeal.decision==='undecided'){const ap=appealLastDay(m);if(ap)return ap.last;}
+  if(m.limitation&&m.limitation.state==='stated')return m.limitation.by;
+  if(m.limitation&&m.limitation.state==='unknown')return'0000';
+  return'9999';
+}
+function vShelf(){
+  let h='<div class="dayhead"><span class="dn" style="font-size:34px">The shelf</span></div>'
+   +'<div class="searchbar" style="margin-top:14px"><input id="msearch" placeholder="Party, case no., court, paper, result, year…" value="'+esc(S.q)+'" autocomplete="off"></div>';
+  const hits=searchMatters(S.q);
+  if(hits){
+    h+='<div class="rule-head"><span class="lbl">'+hits.length+' found — the whole shelf, archived included</span></div>';
+    h+=hits.length?hits.map(x=>shelfRow(x.m,x.why)).join('')
+      :'<div class="footnote">Nothing matches. The search reads parties, case numbers, courts, papers, results and years.</div>';
+    return h;
+  }
+  const opens=open_(),arch=MATTERS.filter(m=>m.archived);
+  h+='<div class="shelf-tabs">'
+   +'<button data-act="mtab" data-v="open" class="'+(S.mtab==='open'?'on':'')+'">On the shelf '+opens.length+'</button>'
+   +'<button data-act="mtab" data-v="arch" class="'+(S.mtab==='arch'?'on':'')+'">Archived '+arch.length+'</button>'
+   +'<span class="sp"></span><button class="act" data-act="new">+ New matter</button></div>';
+  const rows=[...(S.mtab==='open'?opens:arch)].sort((a,b)=>{const ka=sortKey(a),kb=sortKey(b);return ka<kb?-1:1;});
+  h+='<div style="margin-top:6px">'+rows.map(m=>shelfRow(m)).join('')+'</div>';
+  return h;
+}
+/* ============================================================
+   CLOSE THE DAY (center)
+   ============================================================ */
 function resetF(){F.out=null;F.detail='';F.next='';F.purpose=null;F.pres='none';F.presName='';
   F.dirOpen=false;F.dirWhat='';F.dirWho='us';F.dirBy='';F.moreOut=false;F.morePurp=false;}
-function startClose(mid){
-  F.queue=unrecorded().filter(u=>!mid||u.m.id===mid);F.idx=0;F.skipped=0;resetF();
-}
-function chip(act,val,label,on,extra){return'<button class="chip'+(on?' on':'')+(extra||'')+'" data-act="'+act+'" data-v="'+esc(val)+'">'+esc(label)+'</button>';}
-function vClose(){
-  if(!F.queue)startClose();
-  if(F.idx>=F.queue.length){
-    const tomorrow=addDays(TODAY,1),tls=listingsOn(tomorrow),tcx=[...new Set(tls.map(l=>l.m.complex))];
-    return'<div class="done-hero"><div class="tick">✓</div>'
-     +'<div class="big">'+(F.skipped?'Diary closed — '+F.skipped+' skipped':'The diary is closed for today')+'</div>'
-     +'<div class="sub">'+(F.skipped?'A skipped hearing stays flagged on the file — not forgotten, not fudged.':'Every view just rebuilt itself from what you recorded.')+'</div>'
-     +'<div class="sub" style="margin-top:14px"><b>Tomorrow:</b> '+tls.length+' listings across '+tcx.length+' complex'+(tcx.length>1?'es':'')+'. The files to pull tonight are already on the board.</div></div>'
-     +'<button class="btn primary" data-act="day" data-v="'+tomorrow+'">See tomorrow’s board</button>'
-     +'<button class="btn ghost" data-act="nav" data-t="today">Back to Today — the call list is ready</button>';
-  }
-  const{m,h}=F.queue[F.idx];
-  const lc=lastClosed(m);
-  let out='<div class="backrow"><button data-act="nav" data-t="today">‹ Not now</button></div>'
-   +'<div class="close-head"><div class="page-head" style="margin:6px 0 0"><h1>Close the day</h1></div><span class="prog num">'+(F.idx+1)+' of '+F.queue.length+'</span></div>'
-   +'<div class="formcard"><div class="hearing-id"><div class="t">'+esc(m.title)+'</div>'
-   +'<div class="m num">'+esc(m.caseNo||'')+' · '+esc(m.court||'')+(h.item?' · item '+h.item:'')+'</div>'
-   +'<div class="m">Today’s purpose: <b>'+esc(h.purpose||'—')+'</b>'
-   +(lc?'<br>Last time ('+fmt(lc.on)+'): '+esc(lc.outcome.label)+(lc.outcome.detail?' — '+esc(lc.outcome.detail):''):'')+'</div></div>';
-  out+='<div class="f-label">What happened</div><div class="chiprow">'
-   +OUT_PRIMARY.map(([c,l])=>chip('c-out',c,l,F.out===c)).join('')
-   +(F.moreOut?OUT_MORE.map(([c,l])=>chip('c-out',c,l,F.out===c)).join(''):'<button class="chip more" data-act="c-more-out">more…</button>')
-   +'</div>';
-  out+='<div class="f-label">One line for the file <span style="text-transform:none;letter-spacing:0">(optional — your words)</span></div>'
-   +'<input class="tinput" id="c-detail" placeholder="e.g. CW-1 cross concluded; exhibits confronted" value="'+esc(F.detail)+'" autocomplete="off">';
-  out+='<div class="f-label">Next date given</div>'
-   +'<input class="tinput" type="date" id="c-next" value="'+esc(F.next)+'">'
-   +'<div class="f-hint">Recording late and the given date already behind us? Enter it as it is — a true past date beats a tidy future one.</div>'
-   +'<div id="c-clash">'+(F.next?clashNoteHTML(F.next,m.id):'')+'</div>';
-  out+='<div class="f-label">Purpose of the next date</div><div class="chiprow">'
-   +PURP_PRIMARY.map(p=>chip('c-purp',p,p,F.purpose===p)).join('')
-   +(F.morePurp?PURP_MORE.map(p=>chip('c-purp',p,p,F.purpose===p)).join(''):'<button class="chip more" data-act="c-more-purp">more…</button>')
-   +'</div>';
-  out+='<div class="f-label">Must anyone be present?</div><div class="chiprow">'
-   +chip('c-pres','none','No one — counsel only',F.pres==='none')
-   +chip('c-pres','client','Client — '+cName(m),F.pres==='client')
-   +chip('c-pres','wit','A witness',F.pres==='wit')+'</div>'
-   +(F.pres==='wit'?'<input class="tinput" id="c-presname" style="margin-top:8px" placeholder="Who — e.g. Anil Sharma (CW-1)" value="'+esc(F.presName)+'">':'');
-  out+='<div class="f-label">Did the court direct anything?</div>';
+function startClose(mid){F.queue=unrecorded().filter(u=>!mid||u.m.id===mid);F.idx=0;F.skipped=0;resetF();}
+function opt(act,val,label,on,cls){return'<button class="opt'+(on?' on':'')+(cls?' '+cls:'')+'" data-act="'+act+'" data-v="'+esc(val)+'">'+esc(label)+'</button>';}
+function clashLineHTML(date,exceptId){const c=clashCheck(date,exceptId);
+  return'<div class="clashline '+c.level+'">'+esc(c.msg)+'</div>';}
+function closeFormHTML(m,h,ctx){
+  let out='<div class="f-sec" style="margin-top:14px"><span class="lbl">What happened</span><div class="optrow">'
+   +OUT_PRIMARY.map(([c,l])=>opt(ctx+'-out',c,l,F.out===c)).join('')
+   +(F.moreOut?OUT_MORE.map(([c,l])=>opt(ctx+'-out',c,l,F.out===c)).join(''):'<button class="opt more" data-act="'+ctx+'-more-out">more…</button>')
+   +'</div></div>';
+  out+='<div class="f-sec"><span class="lbl">One line for the file <i style="text-transform:none;letter-spacing:0;font-style:normal">(optional — your words)</i></span>'
+   +'<input class="tin" id="'+ctx+'-detail" placeholder="e.g. CW-1 cross concluded; exhibits confronted" value="'+esc(F.detail)+'" autocomplete="off"></div>';
+  out+='<div class="f-sec"><span class="lbl">Next date given</span>'
+   +'<input class="tin" type="date" id="'+ctx+'-next" value="'+esc(F.next)+'">'
+   +'<div class="fhint">Recording late and the given date already behind us? Enter it as it is — a true past date beats a tidy future one.</div>'
+   +'<div id="'+ctx+'-clash">'+(F.next?clashLineHTML(F.next,m.id):'')+'</div></div>';
+  out+='<div class="f-sec"><span class="lbl">Purpose of the next date</span><div class="optrow">'
+   +PURP_PRIMARY.map(p=>opt(ctx+'-purp',p,p,F.purpose===p)).join('')
+   +(F.morePurp?PURP_MORE.map(p=>opt(ctx+'-purp',p,p,F.purpose===p)).join(''):'<button class="opt more" data-act="'+ctx+'-more-purp">more…</button>')
+   +'</div></div>';
+  out+='<div class="f-sec"><span class="lbl">Must anyone be present?</span><div class="optrow">'
+   +opt(ctx+'-pres','none','No one — counsel only',F.pres==='none')
+   +opt(ctx+'-pres','client','Client — '+cName(m),F.pres==='client')
+   +opt(ctx+'-pres','wit','A witness',F.pres==='wit')+'</div>'
+   +(F.pres==='wit'?'<input class="tin" id="'+ctx+'-presname" style="margin-top:9px" placeholder="Who — e.g. Anil Sharma (CW-1)" value="'+esc(F.presName)+'">':'')+'</div>';
+  out+='<div class="f-sec"><span class="lbl">Did the court direct anything?</span>';
   if(F.dirOpen){
-    out+='<input class="tinput" id="c-dirwhat" placeholder="What — e.g. file salary affidavit with slips" value="'+esc(F.dirWhat)+'">'
-     +'<div class="chiprow" style="margin-top:8px">'
-     +chip('c-dirwho','us','We must act',F.dirWho==='us')+chip('c-dirwho','client','The client must',F.dirWho==='client')+chip('c-dirwho','them','They must',F.dirWho==='them')+'</div>'
-     +'<input class="tinput" type="date" id="c-dirby" style="margin-top:8px" value="'+esc(F.dirBy)+'">'
-     +'<div class="f-hint">The deadline is born here, inside the hearing — the dates page just collects it.</div>';
-  }else out+='<button class="chip" data-act="c-dir-toggle">+ Record a direction</button>';
-  out+='<button class="btn primary" data-act="c-save"'+(F.out?'':' disabled')+'>Save & next</button>'
-   +'<button class="btn ghost" data-act="c-skip">I don’t know yet — skip, keep it flagged</button>'
-   +'</div>'
-   +'<div class="f-hint" style="margin-top:10px;text-align:center">One entry — the boards, the dates page and the story update themselves.</div>';
+    out+='<input class="tin" id="'+ctx+'-dirwhat" placeholder="What — e.g. file salary affidavit with slips" value="'+esc(F.dirWhat)+'">'
+     +'<div class="optrow" style="margin-top:9px">'
+     +opt(ctx+'-dirwho','us','We must act',F.dirWho==='us')+opt(ctx+'-dirwho','client','The client must',F.dirWho==='client')+opt(ctx+'-dirwho','them','They must',F.dirWho==='them')+'</div>'
+     +'<input class="tin" type="date" id="'+ctx+'-dirby" style="margin-top:9px" value="'+esc(F.dirBy)+'">'
+     +'<div class="fhint">The deadline is born here, inside the hearing — the dates page just collects it.</div>';
+  }else out+='<button class="opt" data-act="'+ctx+'-dir-toggle">+ Record a direction</button>';
+  out+='</div>';
   return out;
 }
-function clashNoteHTML(date,exceptId){
-  const c=clashCheck(date,exceptId);
-  return'<div class="clash-note '+c.level+'">'+esc(c.msg)+'</div>';
-}
-function saveClose(){
-  const{m,h}=F.queue[F.idx];
+function applyCloseForm(m,h){
   h.outcome={code:F.out,label:OUT_ALL[F.out],detail:F.detail.trim()||null};
+  h.by=S.pen;
   if(F.next){
     const pres=F.pres==='client'?{who:'client',name:cName(m)}:F.pres==='wit'?{who:'witness',name:F.presName.trim()||'a witness'}:null;
     h.next={on:F.next,purpose:F.purpose||'',presence:pres};
-  }
+  }else h.next=null;
   if(F.dirOpen&&F.dirWhat.trim()&&F.dirBy){
     h.directions=h.directions||[];
     h.directions.push({what:F.dirWhat.trim(),who:F.dirWho,by:F.dirBy});
   }
-  S.closed++;F.idx++;resetF();
-  toast('Recorded — every view is updated');
+}
+function vClose(){
+  if(!F.queue)startClose();
+  if(F.idx>=F.queue.length){
+    const tomorrow=addDays(TODAY,1),tls=listingsOn(tomorrow),tcx=[...new Set(tls.map(l=>l.m.complex))];
+    return'<div class="done-hero"><div class="dn">'+dnum(TODAY)+'</div>'
+     +'<div class="big">'+(F.skipped?'Diary closed — '+F.skipped+' skipped':'The diary is closed for today')+'</div>'
+     +'<div class="sub">'+(F.skipped?'A skipped hearing stays flagged on its file — not forgotten, not fudged.':'Every page just rebuilt itself from what you recorded.')+'<br>'
+     +'<b>Tomorrow:</b> '+tls.length+' listings across '+tcx.length+' complex'+(tcx.length>1?'es':'')+'. The files to pull tonight are on the board.</div></div>'
+     +'<button class="btn-ink" data-act="day" data-v="'+tomorrow+'">See tomorrow’s board</button>'
+     +'<button class="btn-quiet" data-act="day" data-v="'+TODAY+'">Back to today — the call list is ready</button>';
+  }
+  const{m,h}=F.queue[F.idx];
+  const lc=lastClosed(m);
+  return'<div style="display:flex;align-items:baseline"><div class="dayhead" style="flex:1"><span class="dn" style="font-size:34px">Close the day</span></div>'
+   +'<span class="prog">'+(F.idx+1)+' of '+F.queue.length+'</span></div>'
+   +'<div class="rule-head" style="margin-top:14px"></div>'
+   +'<div class="close-id"><div class="t">'+esc(m.title)+'</div>'
+   +'<div class="m">'+esc(m.caseNo||'')+' · '+esc(m.court||'')+(h.item?' · item '+h.item:'')+'<br>'
+   +'Today’s purpose: <b>'+esc(h.purpose||'—')+'</b>'
+   +(lc?'<br>Last time ('+fmt(lc.on)+'): '+esc(lc.outcome.label)+(lc.outcome.detail?' — '+esc(lc.outcome.detail):''):'')+'</div></div>'
+   +closeFormHTML(m,h,'c')
+   +'<button class="btn-ink" data-act="c-save"'+(F.out?'':' disabled')+'>Save & next</button>'
+   +'<button class="btn-quiet" data-act="c-skip">I don’t know yet — skip, keep it flagged</button>'
+   +'<div class="footnote" style="text-align:center">One entry — the boards, the dates page and the story update themselves.'
+   +(S.pen==='munshi'?' Writing as: munshi.':'')+'</div>';
 }
 
-/* ---------------- New matter ---------------- */
-const N={client:'',opp:'',kind:'Recovery suit',court:'',lim:null,limDate:''};
-let USEQ=1;
-function vNew(){
-  let h='<div class="backrow"><button data-act="nav" data-t="matters">‹ Matters</button></div>'
-   +'<div class="page-head"><h1>New matter</h1><div class="sub">A party is a record, written down once. Watch the check fire as you type.</div></div>'
-   +'<div class="formcard">'
-   +'<div class="f-label">Client</div><input class="tinput" id="n-client" placeholder="Full name" value="'+esc(N.client)+'" autocomplete="off">'
-   +'<div id="n-client-conf">'+conflictHTML(N.client)+'</div>'
-   +'<div class="f-label">Opposing party</div><input class="tinput" id="n-opp" placeholder="Full name — checked against every file, both roles" value="'+esc(N.opp)+'" autocomplete="off">'
-   +'<div id="n-opp-conf">'+conflictHTML(N.opp)+'</div>'
-   +'<div class="f-label">Nature of the matter</div><div class="chiprow">'
-   +['Recovery suit','s.138 complaint','Maintenance (BNSS)','Writ petition','Eviction','Consultation only'].map(k=>chip('n-kind',k,k,N.kind===k)).join('')+'</div>'
-   +'<div class="f-label">Limitation</div><div class="chiprow">'
-   +chip('n-lim','stated','I’ll state the last date',N.lim==='stated')
-   +chip('n-lim','unknown','Not worked out yet',N.lim==='unknown')+'</div>'
-   +(N.lim==='stated'?'<input class="tinput" type="date" id="n-limdate" style="margin-top:8px" value="'+esc(N.limDate)+'">':'')
-   +(N.lim==='unknown'?'<div class="f-hint" style="color:var(--red)">The file will carry a red “limitation not worked out yet” flag until you state it. The app never invents a date.</div>':'')
-   +'<button class="btn primary" data-act="n-save"'+(N.client.trim()&&N.opp.trim()&&N.lim?'':' disabled')+'>Open the file</button>'
-   +'</div>';
-  return h;
-}
+/* ============================================================
+   NEW MATTER (center)
+   ============================================================ */
+const N={client:'',opp:'',kind:'Recovery suit',lim:null,limDate:''};
 function conflictHTML(typed){
-  const hits=conflictHits(typed||'');
+  const hits=conflictHits(typed);
   if(!hits.length)return'';
-  return'<div style="margin-top:8px">'+hits.map(x=>{
+  return hits.map(x=>{
     const roles=[];
     if(x.asC.length)roles.push(x.asC.length+' as client');
     if(x.asO.length)roles.push(x.asO.length+' as opposing party');
-    return'<button class="clash-note warn" style="display:block;width:100%;margin-top:6px" data-act="party" data-id="'+x.pid+'">'
+    return'<button class="clashline warn" style="display:block;width:100%;margin-top:8px;text-align:left" data-act="open-p" data-id="'+x.pid+'">'
      +'<b>'+esc(x.p.name)+'</b> is already in your files — '+roles.join(', ')
      +'. Tap to read how each went'+(x.p.stand?' and the stands taken':'')+'.</button>';
-  }).join('')+'</div>';
+  }).join('');
+}
+function vNew(){
+  return'<div class="dayhead"><span class="dn" style="font-size:34px">New matter</span>'
+   +'<span class="dmeta"><div class="sub">A party is a record, written down once. Watch the check fire as you type.</div></span></div>'
+   +'<div class="f-sec" style="margin-top:22px"><span class="lbl">Client</span>'
+   +'<input class="tin" id="n-client" placeholder="Full name" value="'+esc(N.client)+'" autocomplete="off">'
+   +'<div id="n-client-conf">'+conflictHTML(N.client)+'</div></div>'
+   +'<div class="f-sec"><span class="lbl">Opposing party</span>'
+   +'<input class="tin" id="n-opp" placeholder="Full name — checked against every file, both roles" value="'+esc(N.opp)+'" autocomplete="off">'
+   +'<div id="n-opp-conf">'+conflictHTML(N.opp)+'</div></div>'
+   +'<div class="f-sec"><span class="lbl">Nature of the matter</span><div class="optrow">'
+   +['Recovery suit','s.138 complaint','Maintenance (BNSS)','Writ petition','Eviction','Consultation only'].map(k=>opt('n-kind',k,k,N.kind===k)).join('')+'</div></div>'
+   +'<div class="f-sec"><span class="lbl">Limitation</span><div class="optrow">'
+   +opt('n-lim','stated','I’ll state the last date',N.lim==='stated')
+   +opt('n-lim','unknown','Not worked out yet',N.lim==='unknown')+'</div>'
+   +(N.lim==='stated'?'<input class="tin" type="date" id="n-limdate" style="margin-top:9px" value="'+esc(N.limDate)+'">':'')
+   +(N.lim==='unknown'?'<div class="fhint red">The file will carry a red “limitation not worked out yet” flag until you state it. The app never invents a date.</div>':'')
+   +'</div>'
+   +'<button class="btn-ink" data-act="n-save"'+(N.client.trim()&&N.opp.trim()&&N.lim?'':' disabled')+'>Open the file</button>';
 }
 function saveNew(){
-  const cid='uc'+USEQ,oid='uo'+USEQ;USEQ++;
+  const cid='uc'+PSEQ,oid='uo'+PSEQ;PSEQ++;
   PARTIES[cid]={name:N.client.trim()};PARTIES[oid]={name:N.opp.trim()};
-  const id='um'+USEQ;
+  const id='um'+(MSEQ++);
   const lim=N.lim==='stated'&&N.limDate
     ?{state:'stated',label:'Limitation — last date as stated at intake',by:N.limDate,basis:'Stated by counsel at intake, '+fmtDot(TODAY)+'. The app tracks it; it does not compute it.'}
     :{state:'unknown',label:'Limitation not worked out yet',basis:'Flagged at intake on '+fmtDot(TODAY)+' — state the date before filing.'};
@@ -1257,130 +1245,545 @@ function saveNew(){
     kind:N.kind,court:null,complex:null,client:[cid],opp:[oid],filedOn:null,consultedOn:TODAY,
     side:'pre-filing',limitation:lim,hearings:[],papers:[]});
   N.client='';N.opp='';N.lim=null;N.limDate='';
-  toast('File opened — cover page first, case number when it is filed');
-  setRoute('#/m/'+id);
+  toast('File opened — cover first, case number when it is filed');
+  setRoute({t:'shelf'},{t:'m',id});
 }
 
-/* ---------------- sheets, footer ---------------- */
-function showSheet(html){$('#sheet').innerHTML=html;$('#sheetwrap').classList.add('open');}
-function hideSheet(){$('#sheetwrap').classList.remove('open');}
-function aboutSheet(){
-  showSheet('<h2>A diary that keeps itself</h2>'
-   +'<p>You write a hearing down <b>once</b>, the way it happened — what the court did, the next date, anything directed. The app does the rest: tomorrow’s board, the dates that cannot be missed, the story of each case, the papers in order.</p>'
-   +'<p><b>Two rules.</b> Record each thing as what it is — never as loose text. And record per matter; every board is just those records viewed sideways.</p>'
-   +'<p><b>Worth trying:</b></p><ul>'
-   +'<li>Close the day — record today’s two pending hearings, offer a busy date, watch the clash check answer.</li>'
-   +'<li>Then open tomorrow’s board: it built itself.</li>'
-   +'<li>Search <b>wagle</b> — the 2023 tenancy file, found by the landlord’s name.</li>'
-   +'<li>Start a new matter and type <b>Narain</b> — the conflict check reads your own files back to you.</li></ul>'
-   +'<p><b>Honesty:</b> every name, number and order here is invented, dated around a fictional Wednesday, 19 August 2026. Nothing you type leaves this page; refresh and the demo is pristine again.</p>'
-   +'<p><b>Still open on purpose:</b> who holds the pen (you or your munshi) · how a warning reaches you if the app is not opened · offline capture in court basements · reconciling with the court’s own cause list (the CNR is recorded for exactly that) · whether fee entries belong here.</p>'
-   +'<p><b>Where it is wrong, say so.</b> Vocabulary that does not match your court, a step that is not how it really happens — tell the person who sent you this link. That is the point of the demo.</p>'
-   +'<button class="btn primary" data-act="sheet-close">Back to the demo</button>');
+/* ============================================================
+   FILE PANE — the matter, or a party
+   ============================================================ */
+function fileHTML(){
+  if(!S.file)return'<div class="file-empty"><div class="big">Pick up a file</div>Tap any matter, any party, anywhere.<br>It opens here, beside the day.</div>';
+  if(S.file.t==='p')return partyHTML(S.file.id);
+  const m=byId(S.file.id);
+  if(!m)return'<div class="file-empty"><div class="big">File not found</div></div>';
+  return matterHTML(m);
 }
-function endedSheet(){
-  showSheet('<h2>Recording how a case ends</h2>'
-   +'<p>Three questions, asked once: the result (won · lost · settled · withdrawn), the <b>judgment date</b> — not today’s — and, for a loss, <b>which forum the appeal lies to</b>. The window is computed for that forum, corrected for certified-copy time off the papers, and the clock runs whether or not the client has decided.</p>'
-   +'<p>It is played out on <b>Bhasin v. Chandna</b> — suit dismissed on 7 Aug, recorded three days later, appeal window to the District Judge open till 14 Sep.</p>'
-   +'<button class="btn primary" data-act="open-matter" data-id="m6">Open Bhasin v. Chandna</button>'
-   +'<button class="btn ghost" data-act="sheet-close">Close</button>');
+function matterHTML(m){
+  const tab=S.ftab[m.id]||'diary';
+  const cur=currentListing(m);
+  let h='<div class="file-back"><button class="act" data-act="file-close">‹ Put the file down</button></div>';
+  h+='<div class="fcover"><div class="kicker">'
+   +(m.archived?'<span class="stamp">archived</span>':'')
+   +(m.outcome?'<span class="stamp'+(m.outcome.result==='lost'?' red':' ink')+'">'+esc(m.outcome.result)+'</span>':'')
+   +(!m.filedOn&&!m.outcome?'<span class="stamp">pre-filing</span>':'')
+   +(cur&&cur.unrecorded?'<span class="stamp red">to record</span>':'')
+   +'</div><h1>'+esc(m.title)+'</h1>'
+   +'<div class="kind">'+esc(m.kind)+(m.side?' · '+esc(m.side):'')+'</div><dl>';
+  h+='<dt>Parties</dt><dd>'+partyLinks(m)+'</dd>';
+  if(m.caseNo)h+='<dt>Case no.</dt><dd><b>'+esc(m.caseNo)+'</b>'+(m.cnr?' · CNR '+esc(m.cnr):'')+'</dd>';
+  if(m.court)h+='<dt>Court</dt><dd>'+esc(m.court)+'</dd>';
+  h+='<dt>'+(m.filedOn?'Filed':'Consulted')+'</dt><dd>'+fmtY(m.filedOn||m.consultedOn)+'</dd>';
+  if(cur&&!m.outcome)h+='<dt>Next date</dt><dd><b>'+fmt(cur.on)+'</b> · '+esc(cur.purpose||'')+' <span class="faint">('+rel(cur.on)+')</span></dd>';
+  h+='</dl>';
+  if(m.note)h+='<div class="fhint" style="margin-top:8px">'+esc(m.note)+'</div>';
+  if(m.outcome)h+=resultBlock(m);
+  h+='<div class="factions">'
+   +'<button class="act" data-act="copymsg" data-id="'+m.id+'">Copy as message</button>'
+   +(!m.outcome?'<button class="act" data-act="sh-hearing" data-id="'+m.id+'">Record a hearing</button>':'')
+   +'<button class="act" data-act="sh-paper" data-id="'+m.id+'">Add a paper</button>'
+   +(!m.outcome&&m.filedOn?'<button class="act" data-act="sh-outcome" data-id="'+m.id+'">How it ended</button>':'')
+   +'<button class="act" data-act="sh-cover" data-id="'+m.id+'">'+(m.filedOn?'Edit cover':'File it / edit cover')+'</button>'
+   +((m.papers||[]).length>1?'<button class="act" data-act="sh-bundle" data-id="'+m.id+'">Bundle</button>':'')
+   +(m.outcome&&!m.archived?'<button class="act" data-act="archive" data-id="'+m.id+'">Put away</button>':'')
+   +'</div></div>';
+  h+='<div class="ftabs">'+['diary','dates','papers','story','fees'].map(t=>
+    '<button data-act="ftab" data-id="'+m.id+'" data-v="'+t+'" class="'+(tab===t?'on':'')+'">'+t+'</button>').join('')+'</div>';
+  h+={diary:fDiary,dates:fDates,papers:fPapers,story:fStory,fees:fFees}[tab](m);
+  return h;
 }
-function footHTML(){
-  return'A working sketch — a fictional Delhi practice, dated around Wednesday 19 August 2026. Everything is invented; nothing you type leaves this page. '
-   +'<button data-act="about">About & what to try</button> · <button data-act="reset">Reset the demo</button>';
+function partyLinks(m){
+  const links=side=>{
+    const ids=side==='client'?(m.client||[]):(m.opp||[]);
+    if(ids.length)return ids.map(pid=>'<button class="plink" data-act="open-p" data-id="'+pid+'">'+esc(P(pid).name)+'</button>').join(', ');
+    return esc(side==='client'?(m.clientName||'—'):(m.oppName||'—'));
+  };
+  return links('client')+' <span class="faint">vs</span> '+links('opp');
 }
-
-/* ---------------- routing & events ---------------- */
-function parseHash(){
-  const p=(location.hash||'').replace(/^#\/?/,'').split('/');
-  switch(p[0]){
-    case'week':return{t:'week'};
-    case'matters':return{t:'matters'};
-    case'new':return{t:'new'};
-    case'close':return{t:'close'};
-    case'm':return{t:'matter',id:p[1]};
-    case'p':return{t:'party',id:p[1]};
-    case'd':return{t:'day',date:p[1]};
-    default:return{t:'today'};
+function resultBlock(m){
+  const o=m.outcome,a=o.appeal,ap=a?appealLastDay(m):null;
+  let h='<div class="result-block'+(o.result==='won'?' won':'')+'"><b>'+esc(o.label)+'</b> — judgment of '+fmt(o.judgmentOn)+', recorded '+fmt(o.recordedOn)+'.';
+  if(a&&ap){
+    if(a.decision==='undecided'&&ap.last>=TODAY){
+      h+='<br>Appeal to the <b>'+esc(a.forum)+'</b> possible till <b>'+fmt(ap.last)+'</b> ('+daysUntil(ap.last)+' days). Client undecided — the clock runs regardless.'
+       +(ap.ct&&ap.ct.pending?'<br><span class="red">Certified copy applied '+fmtDot(ap.ct.applied)+', not yet received — the window will extend when the copy paper is added.</span>':'')
+       +'<div style="margin-top:8px;display:flex;gap:14px"><button class="act" data-act="sh-appealfiled" data-id="'+m.id+'">Appeal filed</button>'
+       +'<button class="act" data-act="appeal-drop" data-id="'+m.id+'">Not appealing</button></div>';
+    }else if(a.decision==='dropped'&&ap.last>=TODAY){
+      h+='<br><span class="stamp">not appealing</span> decided — but the window stays watched till <b>'+fmt(ap.last)+'</b>, because clients change their minds.'
+       +'<div style="margin-top:8px"><button class="act" data-act="appeal-undecide" data-id="'+m.id+'">Client reconsidered</button></div>';
+    }else if(a.decision==='filed'){
+      h+='<br>Appeal filed '+fmt(a.filedOn)+' — the clock is answered.';
+    }else if(ap.last<TODAY){
+      h+='<br>Appeal window closed '+fmt(ap.last)+'.';
+    }
   }
+  return h+'</div>';
 }
-function setRoute(hash){
-  if(('#'+hash.replace(/^#/,''))===location.hash){render();}
-  else location.hash=hash;
+function fDiary(m){
+  const hs=[...(m.hearings||[])].sort((a,b)=>a.on<b.on?1:-1);
+  let h='<div class="f-sec" style="margin-top:14px">';
+  const un=unrecorded().filter(u=>u.m.id===m.id);
+  if(un.length)h+='<button class="strip" style="margin-top:0" data-act="close-start" data-mid="'+m.id+'"><span class="t"><b>Today’s hearing is not recorded.</b></span><span class="go act red">Record it →</span></button>';
+  if(!hs.length){h+='<div class="footnote">No hearings yet — '+(m.filedOn?'awaiting first listing. Record one from the actions above.':'not filed yet.')+'</div></div>';return h;}
+  let newestClosed=true;
+  h+='<div style="margin-top:4px">';
+  for(const hr of hs){
+    if(!hr.outcome){
+      if(hr.on>TODAY){
+        h+='<div class="dentry"><div class="dl1"><span class="don">'+fmt(hr.on)+'</span><span class="purp">'+esc(hr.purpose||'')+'</span></div>'
+         +'<div class="sub">Listed — coming up ('+rel(hr.on)+').'+(hr.presence?' '+esc(hr.presence.name)+' to appear.':'')+'</div>'
+         +(hr.moved?'<div class="movednote">Moved by the court from '+fmt(hr.moved.from)+' — '+esc(hr.moved.why)+'.</div>':'')
+         +'<div style="margin-top:6px"><button class="act" data-act="sh-move" data-id="'+m.id+'" data-v="'+hr.on+'">Court moved the date</button></div></div>';
+      }else{
+        h+='<div class="dentry blank"><div class="dl1"><span class="don">'+fmt(hr.on)+'</span><span class="purp">'+esc(hr.purpose||'')+'</span></div>'
+         +'<div class="what">No outcome recorded — the diary has a blank line.</div></div>';
+      }
+      continue;
+    }
+    let e='<div class="dentry"><div class="dl1"><span class="don">'+fmtY(hr.on)+'</span><span class="purp">'+esc(hr.purpose||'')+'</span></div>';
+    e+='<div class="what">'+esc(hr.outcome.label)+(hr.outcome.detail?' <span class="det">— '+esc(hr.outcome.detail)+'</span>':'')
+     +(hr.by==='munshi'?' <span class="faint tiny">· munshi’s entry</span>':'')+'</div>';
+    if(hr.moved)e+='<div class="movednote">This listing was moved by the court from '+fmt(hr.moved.from)+' — '+esc(hr.moved.why)+'.</div>';
+    if(hr.next&&newestClosed)e+='<div class="sub">→ next <b>'+fmt(hr.next.on)+'</b> · '+esc(hr.next.purpose||'')+(hr.next.presence?' · '+esc(hr.next.presence.name)+' to appear':'')+'</div>';
+    for(const d of hr.directions||[]){
+      e+='<div class="dirline">'+(d.done?'<span class="done">✓</span>':'<button class="tickbtn" data-act="dir-done" data-id="'+m.id+'" data-v="'+esc(hr.on+'|'+d.what)+'">mark done</button>')
+       +'<span>'+esc(d.what)+' — '+(d.who==='us'?'we act':d.who==='them'?'they act':'client acts')+' by '+fmt(d.by)
+       +(d.done?' <span class="done">done '+fmtDot(d.done)+'</span>':'')+'</span></div>';
+    }
+    e+='</div>';h+=e;newestClosed=false;
+  }
+  h+='</div><div class="footnote">Each entry was written once, at the hearing. The boards, the dates page and the story are built from these lines.</div></div>';
+  return h;
 }
-let lastKey='';
+function fDates(m){
+  let rows='';
+  if(m.limitation&&m.limitation.state==='stated'){
+    for(const c of m.limitation.chain||[])
+      rows+='<div class="duerow" style="cursor:default"><div class="t1"><span class="what" style="color:#3d7a55">✓ '+esc(c.label)+'</span><span class="dleft">done '+fmtDot(c.met)+'</span></div><div class="prov">Was due by '+fmt(c.by)+' — met in time.</div></div>';
+    if(m.limitation.met)
+      rows+='<div class="duerow" style="cursor:default"><div class="t1"><span class="what" style="color:#3d7a55">✓ '+esc(m.limitation.label)+'</span><span class="dleft">done '+fmtDot(m.limitation.met)+'</span></div></div>';
+    else rows+='<div class="duerow" style="cursor:default"><div class="t1"><span class="what">'+esc(m.limitation.label)+'</span><span class="dleft'+(daysUntil(m.limitation.by)<=5?' hot':'')+'">'+rel(m.limitation.by)+'</span></div>'
+      +'<div class="of">by <b>'+fmt(m.limitation.by)+'</b></div>'
+      +'<div class="cost">miss = the claim becomes time-barred</div><div class="prov">'+esc(m.limitation.basis)+'</div>'
+      +'<div style="margin-top:7px"><button class="act" data-act="limit-met" data-id="'+m.id+'">Mark met</button></div></div>';
+  }
+  if(m.limitation&&m.limitation.state==='unknown')
+    rows+='<div class="duerow" style="cursor:default"><div class="t1"><span class="what red">'+esc(m.limitation.label)+'</span><span class="dleft hot">no date yet</span></div>'
+     +'<div class="cost">'+esc(m.limitation.basis)+'</div><div class="prov">This stays red until you state the date — the app never invents one.</div>'
+     +'<div style="margin-top:7px"><button class="act" data-act="sh-limit" data-id="'+m.id+'">State the date</button></div></div>';
+  for(const i of dueList().filter(i=>i.m.id===m.id&&['dir','refile','prot','cond','appeal'].includes(i.kind))){
+    const missed=i.due<TODAY&&!i.done;
+    rows+='<div class="duerow" style="cursor:default"><div class="t1"><span class="what">'+(missed?'<span class="rdot">●</span> ':'')+esc(i.title)+'</span>'
+     +'<span class="dleft'+(missed||daysUntil(i.due)<=2?' hot':'')+'">'+(missed?Math.abs(daysUntil(i.due))+' days over':rel(i.due))+'</span></div>'
+     +'<div class="of">by <b>'+fmt(i.due)+'</b>'+(i.who==='them'?' · their obligation':i.who==='client'?' · <span class="red">client must act</span>':'')
+     +(i.pill?' · <span class="stamp">'+esc(i.pill)+'</span>':'')+'</div>'
+     +'<div class="cost">'+esc(i.cost)+'</div><div class="prov">'+esc(i.prov)+'</div>'
+     +(i.kind==='dir'&&!i.done?'<div style="margin-top:7px"><button class="act" data-act="dir-done" data-id="'+m.id+'" data-v="'+esc(i.h.on+'|'+i.d.what)+'">Mark done</button></div>':'')
+     +(i.kind==='refile'?'<div style="margin-top:7px"><button class="act" data-act="refile-done" data-id="'+m.id+'">Refiled — done</button></div>':'')
+     +(i.kind==='cond'?'<div style="margin-top:7px"><button class="act" data-act="cond-met" data-id="'+m.id+'">Condition met</button></div>':'')
+     +'</div>';
+  }
+  const cur=currentListing(m);
+  if(cur&&!cur.unrecorded)rows+='<div class="duerow" style="cursor:default"><div class="t1"><span class="what">Next hearing — '+esc(cur.purpose||'')+'</span><span class="dleft">'+rel(cur.on)+'</span></div>'
+   +'<div class="of"><b>'+fmt(cur.on)+'</b>'+(cur.presence?' · '+esc(cur.presence.name)+' to appear':'')+'</div>'
+   +'<div class="prov">Born at the last hearing — never entered twice.</div></div>';
+  if(!rows)rows='<div class="footnote" style="margin-top:14px">Nothing on the clock for this file.</div>';
+  return'<div class="f-sec" style="margin-top:6px">'+rows
+   +'<div class="footnote">This page collects — it never asks. Every date above was born inside a hearing, a paper, a result or the cover page.</div></div>';
+}
+function fPapers(m){
+  const ps=[...(m.papers||[])].sort((a,b)=>a.dt<b.dt?1:-1);
+  let h='<div class="f-sec" style="margin-top:10px"><div style="display:flex;gap:16px">'
+   +'<button class="act" data-act="sh-paper" data-id="'+m.id+'">+ Add a paper</button>'
+   +(ps.length>1?'<button class="act" data-act="sh-bundle" data-id="'+m.id+'">Assemble a bundle</button>':'')+'</div>';
+  if(!ps.length)return h+'<div class="footnote" style="margin-top:12px">No papers on file yet.</div></div>';
+  const kinds=['All',...new Set(ps.map(p=>p.kind))];
+  const f=S.pf[m.id]||'All';
+  const show=ps.filter(p=>f==='All'||p.kind===f);
+  h+='<div class="kindf">'+kinds.map(k=>'<button data-act="pf" data-id="'+m.id+'" data-v="'+esc(k)+'" class="'+(f===k?'on':'')+'">'+esc(k)+(k!=='All'?' '+ps.filter(p=>p.kind===k).length:'')+'</button>').join('')+'</div>';
+  h+=show.map(p=>'<div class="paper-row"><div class="pl">'+esc(p.label)+'</div>'
+   +'<div class="pm">'+esc(p.kind)+' · dt. '+fmtDot(p.dt)+' · '+p.pages+' pp · '+({us:'filed by us',them:'filed by them',court:'issued by the court',client:'from the client'})[p.side]
+   +(p.original?' · <b>◉ original in office</b>':'')+'</div></div>').join('');
+  h+='<div class="footnote">Every paper carries its kind, its own date and whose it is — filter to Orders and the right one is in hand before the judge finishes the question.</div></div>';
+  return h;
+}
+function fStory(m){
+  const rows=storyOf(m);
+  if(!rows.length)return'<div class="footnote" style="margin-top:16px">The story starts with the first record.</div>';
+  return'<div class="f-sec" style="margin-top:8px">'+rows.map(r=>'<div class="story-row"><span class="sd">'+fmtDot(r.on)+'</span><span>'+esc(r.t)+'</span></div>').join('')
+   +'<div class="footnote">Stitched from the diary, the papers, the fees and the cover — nothing written separately, nothing twice.</div></div>';
+}
+function fFees(m){
+  const fees=[...(m.fees||[])].sort((a,b)=>a.on<b.on?1:-1);
+  const total=fees.reduce((s,f)=>s+f.amt,0);
+  let h='<div class="f-sec" style="margin-top:10px"><button class="act" data-act="sh-fee" data-id="'+m.id+'">+ Record a payment received</button>';
+  if(!fees.length)return h+'<div class="footnote" style="margin-top:12px">Nothing received on this file yet. The paper diary’s back pages hold this — so must the file.</div></div>';
+  h+='<div style="margin-top:8px">'+fees.map(f=>'<div class="fee-row"><span class="amt">'+inr(f.amt)+'</span><span class="mut small">'+fmt(f.on)+(f.note?' — '+esc(f.note):'')+'</span></div>').join('')+'</div>'
+   +'<div class="fee-total">received on this file<b>'+inr(total)+'</b></div>'
+   +'<div class="footnote">A bare record — amount, date, matter. No invoicing, no engine. Enough to retire the diary’s back pages.</div></div>';
+  return h;
+}
+function partyHTML(pid){
+  const p=P(pid),{asC,asO}=partyMatters(pid);
+  let h='<div class="file-back"><button class="act" data-act="file-close">‹ Put it down</button></div>';
+  h+='<div class="pt-head"><div class="lbl">Party record</div><h1>'+esc(p.name)+'</h1><div class="sub">'
+   +(p.phone?'<a href="tel:+91'+p.phone.replace(/\s/g,'')+'" style="color:var(--ink)">'+p.phone+'</a>':'no phone on record')
+   +' <button class="act" data-act="sh-phone" data-id="'+pid+'" style="margin-left:8px">'+(p.phone?'edit':'add a number')+'</button>'
+   +'<br>'+asC.length+' as client · '+asO.length+' as opposing party</div></div>';
+  if(p.stand)h+='<div class="stand"><b>Stands on record:</b> '+esc(p.stand)+'</div>';
+  if(asC.length)h+='<div class="rule-head"><span class="lbl">As client</span></div>'+asC.map(m=>shelfRow(m)).join('');
+  if(asO.length)h+='<div class="rule-head"><span class="lbl">As opposing party</span></div>'+asO.map(m=>shelfRow(m)).join('');
+  return h;
+}
+/* ============================================================
+   SHEETS — every capture surface of the product, alive.
+   ============================================================ */
+let SHEET=null;
+function showSheet(spec){SHEET=spec;renderSheet();$('#sheetwrap').classList.add('open');}
+function hideSheet(){SHEET=null;$('#sheetwrap').classList.remove('open');}
+function sheetHTML(){
+  if(!SHEET)return'';
+  const m=SHEET.mid?byId(SHEET.mid):null;
+  switch(SHEET.type){
+  case'paper':{
+    let h='<h2>Add a paper to the file</h2><div class="sub">'+esc(m.title)+' — a paper is a kind, its own date, and whose it is. Never “scan_3.pdf”.</div>'
+     +'<div class="f-sec"><span class="lbl">What is it</span><input class="tin" id="shp-label" placeholder="e.g. Order dt. 19.08.2026 (issues framed)" value="'+esc(SH.label||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Kind</span><div class="optrow">'+PAPER_KINDS.filter(k=>k!=='Bundle').map(k=>opt('p-kind',k,k,SH.kind===k)).join('')+'</div></div>'
+     +'<div class="f-sec"><span class="lbl">The paper’s own date</span><input class="tin" type="date" id="shp-dt" value="'+esc(SH.dt||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Pages</span><input class="tin" id="shp-pages" inputmode="numeric" placeholder="e.g. 12" value="'+esc(SH.pages||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Whose paper</span><div class="optrow">'
+     +opt('p-side','us','Filed by us',SH.side==='us')+opt('p-side','them','Filed by them',SH.side==='them')
+     +opt('p-side','court','Issued by the court',SH.side==='court')+opt('p-side','client','From the client',SH.side==='client')+'</div></div>'
+     +'<div class="f-sec"><div class="optrow">'+opt('p-orig','1','◉ physical original stays in the office',SH.orig)+'</div></div>';
+    if(SH.kind==='Registry objection')
+      h+='<div class="f-sec"><span class="lbl red">Refile by — the clock this paper carries</span><input class="tin" type="date" id="shp-refile" value="'+esc(SH.refile||'')+'">'
+       +'<div class="fhint">The refile deadline is born from this paper’s label — the dates page will collect it.</div></div>';
+    if(SH.kind==='Order'){
+      h+='<div class="f-sec"><div class="optrow">'+opt('p-prot','1','This order carries interim protection',SH.prot)+'</div>';
+      if(SH.prot)h+='<input class="tin" id="shp-protlabel" style="margin-top:9px" placeholder="e.g. Demolition stayed" value="'+esc(SH.protLabel||'')+'">'
+       +'<div class="optrow" style="margin-top:9px">'+opt('p-protmode','till-next-date','Till the next date',SH.protMode==='till-next-date')
+       +opt('p-protmode','condition','Conditional',SH.protMode==='condition')+'</div>'
+       +(SH.protMode==='condition'?'<input class="tin" id="shp-condwhat" style="margin-top:9px" placeholder="The condition — e.g. deposit ₹5,00,000" value="'+esc(SH.condWhat||'')+'">'
+         +'<input class="tin" type="date" id="shp-condby" style="margin-top:9px" value="'+esc(SH.condBy||'')+'">':'');
+      h+='</div>';
+    }
+    if((SH.kind==='Copy application'||SH.kind==='Certified copy')&&m.outcome)
+      h+='<div class="fhint">This paper feeds the appeal clock directly — the s.12(2) exclusion recomputes from it. Same record, never a second store.</div>';
+    return h+'<button class="btn-ink" data-act="paper-save"'+(SH.label&&SH.kind&&SH.dt?'':' disabled')+'>Put it on the file</button>';
+  }
+  case'hearing':{
+    let h='<h2>Record a hearing</h2><div class="sub">'+esc(m.title)+' — past dates welcome; a true late entry beats a tidy false one. A future date just lists it: the outcome fields simply wait.</div>'
+     +'<div class="f-sec"><span class="lbl">Date of the hearing / listing</span><input class="tin" type="date" id="shh-date" value="'+esc(SH.hdate||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Purpose of that day</span><input class="tin" id="shh-purp" placeholder="e.g. Framing of issues" value="'+esc(SH.hpurp||'')+'"></div>'
+     +closeFormHTML(m,{},'h');
+    return h+'<button class="btn-ink" data-act="hearing-save"'+(SH.hdate?'':' disabled')+'>Record it</button>';
+  }
+  case'outcome':{
+    const cur=currentListing(m);
+    let h='<h2>How the case ended</h2><div class="sub">'+esc(m.title)+' — three questions, asked once.</div>'
+     +'<div class="f-sec"><span class="lbl">The result</span><div class="optrow">'
+     +[['won','Won'],['lost','Lost'],['settled','Settled'],['withdrawn','Withdrawn']].map(([v,l])=>opt('o-res',v,l,SH.res===v)).join('')+'</div></div>'
+     +'<div class="f-sec"><span class="lbl">In a line</span><input class="tin" id="sho-label" placeholder="'+esc({won:'e.g. Suit decreed with costs',lost:'e.g. Suit dismissed',settled:'e.g. Settled at ₹4 lakh',withdrawn:'e.g. Withdrawn — settled outside'}[SH.res]||'e.g. Suit decreed / dismissed')+'" value="'+esc(SH.olabel||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Judgment date — not today’s</span><input class="tin" type="date" id="sho-jdate" value="'+esc(SH.jdate||'')+'">'
+     +'<div class="fhint">Results are often learnt late. The clock runs from the judgment, so this date is the one that matters.</div></div>';
+    if(SH.res==='lost')h+='<div class="f-sec"><span class="lbl red">Appeal lies to — the window depends on it</span><div class="optrow">'
+     +APPEAL_FORUMS.map((f,i)=>opt('o-forum',String(i),f[0]+' · '+f[1]+'d',SH.forum===String(i))).join('')+'</div></div>';
+    if(cur&&cur.on>TODAY)h+='<div class="fhint red">A listing of '+fmt(cur.on)+' still stands on this file — record the result only if that date is truly spent.</div>';
+    return h+'<button class="btn-ink" data-act="outcome-save"'+(SH.res&&SH.jdate&&(SH.res!=='lost'||SH.forum!=null)?'':' disabled')+'>Record the result</button>';
+  }
+  case'cover':{
+    return'<h2>'+(m.filedOn?'The cover page':'File it — the cover page')+'</h2><div class="sub">'+esc(m.title)+' — the case number arrives when the court gives it. Write it once, find it forever.</div>'
+     +'<div class="f-sec"><span class="lbl">Case number</span><input class="tin" id="shc-caseno" placeholder="e.g. CS 123/2026" value="'+esc(SH.caseNo??m.caseNo??'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">CNR (for the e-courts check)</span><input class="tin" id="shc-cnr" placeholder="e.g. DLCT01-004521-2026" value="'+esc(SH.cnr??m.cnr??'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Court</span><input class="tin" id="shc-court" placeholder="e.g. Tis Hazari (Civil Judge-02)" value="'+esc(SH.court??m.court??'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Complex</span><div class="optrow">'+COMPLEXES.map(c=>opt('c-complex',c,c,(SH.complex??m.complex)===c)).join('')+'</div></div>'
+     +'<div class="f-sec"><span class="lbl">Filing date</span><input class="tin" type="date" id="shc-filed" value="'+esc(SH.filed??m.filedOn??'')+'"></div>'
+     +'<button class="btn-ink" data-act="cover-save">Save the cover</button>';
+  }
+  case'fee':{
+    return'<h2>Payment received</h2><div class="sub">'+esc(m.title)+' — the diary’s back pages, made a record.</div>'
+     +'<div class="f-sec"><span class="lbl">Amount (₹)</span><input class="tin" id="shf-amt" inputmode="numeric" placeholder="e.g. 15000" value="'+esc(SH.amt||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Date</span><input class="tin" type="date" id="shf-date" value="'+esc(SH.fdate||TODAY)+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Note (optional)</span><input class="tin" id="shf-note" placeholder="e.g. towards evidence stage" value="'+esc(SH.note||'')+'"></div>'
+     +'<button class="btn-ink" data-act="fee-save"'+(SH.amt?'':' disabled')+'>Record it</button>';
+  }
+  case'move':{
+    return'<h2>Court moved the date</h2><div class="sub">'+esc(m.title)+' — listed '+fmt(SHEET.hon)+'. No fake outcome, no false blank line: the listing is re-dated, the move stays on the story.</div>'
+     +'<div class="f-sec"><span class="lbl">New date</span><input class="tin" type="date" id="shm-date" value="'+esc(SH.mdate||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Why</span><div class="optrow">'
+     +['Bench on leave','Preponed via cause list','Renotified by registry','Other'].map(w=>opt('m-why',w,w,SH.mwhy===w)).join('')+'</div></div>'
+     +(SH.mdate?'<div id="shm-clash">'+clashLineHTML(SH.mdate,m.id)+'</div>':'')
+     +'<button class="btn-ink" data-act="move-save"'+(SH.mdate&&SH.mwhy?'':' disabled')+'>Move the listing</button>';
+  }
+  case'phone':{
+    const p=P(SHEET.pid);
+    return'<h2>'+esc(p.name)+'</h2><div class="sub">A party is a record — give it the number once, every call list finds it.</div>'
+     +'<div class="f-sec"><span class="lbl">Phone</span><input class="tin" id="shph-num" inputmode="tel" placeholder="98xxx xxxxx" value="'+esc(SH.num??p.phone??'')+'"></div>'
+     +'<button class="btn-ink" data-act="phone-save">Save</button>';
+  }
+  case'limit':{
+    return'<h2>State the limitation</h2><div class="sub">'+esc(m.title)+' — you work it out; the app tracks it. It never invents a date.</div>'
+     +'<div class="f-sec"><span class="lbl">What must be done</span><input class="tin" id="shl-label" placeholder="e.g. File the recovery suit" value="'+esc(SH.llabel||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Last date</span><input class="tin" type="date" id="shl-date" value="'+esc(SH.ldate||'')+'"></div>'
+     +'<div class="f-sec"><span class="lbl">Basis (your working)</span><input class="tin" id="shl-basis" placeholder="e.g. Art. 113 — 3 years from acknowledgement of 12.03.2024" value="'+esc(SH.lbasis||'')+'"></div>'
+     +'<button class="btn-ink" data-act="limit-save"'+(SH.llabel&&SH.ldate?'':' disabled')+'>Set the clock</button>';
+  }
+  case'appealfiled':{
+    return'<h2>Appeal filed</h2><div class="sub">'+esc(m.title)+'</div>'
+     +'<div class="f-sec"><span class="lbl">Filed on</span><input class="tin" type="date" id="shaf-date" value="'+esc(SH.afdate||TODAY)+'"></div>'
+     +'<button class="btn-ink" data-act="appealfiled-save">Record it — the clock is answered</button>';
+  }
+  case'clmis':{
+    return'<h2>The cause list differs</h2><div class="sub">'+esc(m.title)+' — diary says '+fmt(SHEET.hon)+'. What does the court’s list say?</div>'
+     +'<div class="f-sec"><span class="lbl">Court’s date</span><input class="tin" type="date" id="shcl-date" value="'+esc(SH.cldate||'')+'"></div>'
+     +'<button class="btn-ink" data-act="clmis-save"'+(SH.cldate?'':' disabled')+'>Flag the mismatch</button>';
+  }
+  case'bundle':{
+    const ps=(m.papers||[]).filter(p=>p.kind!=='Bundle');
+    SH.sel=SH.sel||[];
+    let h='<h2>Assemble a bundle</h2><div class="sub">'+esc(m.title)+' — tap the papers in filing order. The index writes itself from each paper’s recorded kind and date.</div>'
+     +'<div class="f-sec">'+ps.map((p,i)=>{
+       const ord=SH.sel.indexOf(i);
+       return'<button class="b-row'+(ord>=0?' sel':'')+'" data-act="b-tog" data-v="'+i+'">'
+        +'<span class="ord">'+(ord>=0?ord+1:'')+'</span><span style="flex:1"><span class="pl small" style="font-weight:600">'+esc(p.label)+'</span>'
+        +'<div class="pm">'+esc(p.kind)+' · dt. '+fmtDot(p.dt)+' · '+p.pages+' pp</div></span></button>';}).join('')+'</div>';
+    if(SH.sel.length){
+      let pg=1;
+      const rows=SH.sel.map((idx,n)=>{const p=ps[idx];const from=pg,to=pg+p.pages-1;pg=to+1;
+        return'<tr><td class="num">'+(n+1)+'</td><td>'+esc(p.label)+'</td><td class="num">'+fmtDot(p.dt)+'</td><td class="num">'+from+'–'+to+'</td></tr>';}).join('');
+      h+='<div class="b-index"><table><tr><th class="num">S.No</th><th>Particulars</th><th class="num">Dated</th><th class="num">Pages</th></tr>'+rows+'</table></div>'
+       +'<div class="fhint">Total '+(pg-1)+' pages, continuously numbered. Swap one paper and it renumbers itself.</div>'
+       +'<button class="btn-ink" data-act="b-keep">Keep on the file as the record of what was filed</button>';
+    }
+    return h;
+  }
+  case'about':{
+    return'<h2>The diary that keeps itself</h2>'
+     +'<p class="sub" style="margin-top:10px">Write each hearing down <b>once</b> — what the court did, the next date, anything directed — and every other page builds itself: tomorrow’s board, the dates that cannot slip, the story of each case, the papers in order.</p>'
+     +'<p class="sub"><b>The desk:</b> time on the left, the day in the middle, and whichever file you pick up on the right — nothing repeated, nothing lost.</p>'
+     +'<p class="sub"><b>Worth trying:</b> Close the day (two hearings pending — offer a busy date, watch the clash check answer, then see tomorrow build itself) · tomorrow’s cause-list check, where the court’s list disagrees with the diary · open <i>Bhasin v. Chandna</i> — the appeal clock reads the certified-copy papers themselves · add a Registry-objection paper to any file and watch a refile clock get born · search <b>wagle</b> · start a new matter and type <b>Narain</b>.</p>'
+     +'<p class="sub"><b>Everything is capture:</b> add papers, edit covers, record hearings and results, fees in the back pages, the munshi can hold the pen — and every record you make flows to every page instantly.</p>'
+     +'<p class="sub"><b>Honesty:</b> a fictional Delhi practice on a fictional Wednesday, 19 August 2026. Every name and number is invented. Nothing you type leaves this page; refresh and it is pristine again.</p>'
+     +'<p class="sub"><b>Where it is wrong, say so.</b> Vocabulary that doesn’t match your court, a step that isn’t how it really happens — tell the person who sent you this link. That is the point.</p>'
+     +'<button class="btn-ink" data-act="sheet-close">Back to the desk</button>';
+  }
+  }
+  return'';
+}
+function renderSheet(){$('#sheet').innerHTML=sheetHTML();}
+function openSheet(type,mid,extra){for(const k in SH)delete SH[k];resetF();showSheet(Object.assign({type,mid},extra||{}));}
+
+/* ============================================================
+   MUTATIONS
+   ============================================================ */
+function findOpenHearing(m,on){return(m.hearings||[]).find(h=>!h.outcome&&h.on===on);}
+function moveListing(m,hon,newDate,why){
+  const h=findOpenHearing(m,hon);if(!h)return;
+  h.moved={from:h.on,why,on:TODAY};h.on=newDate;h.causeList=null;
+}
+function savePaper(m){
+  const p={kind:SH.kind,label:SH.label.trim(),dt:SH.dt,pages:parseInt(SH.pages||'0')||1,side:SH.side||'us'};
+  if(SH.orig)p.original=true;
+  m.papers=m.papers||[];m.papers.push(p);
+  let born='';
+  if(SH.kind==='Registry objection'&&SH.refile){
+    m.refile={what:'Cure registry objections & refile',by:SH.refile,born:'objection memo dt. '+fmtDot(SH.dt)};
+    born=' A refile clock was born from it.';
+  }
+  if(SH.kind==='Order'&&SH.prot&&SH.protLabel){
+    const pr={label:SH.protLabel.trim(),mode:SH.protMode||'till-next-date',born:'order dt. '+fmtDot(SH.dt)};
+    if(SH.protMode==='condition'&&SH.condWhat&&SH.condBy)pr.condition={what:SH.condWhat.trim(),by:SH.condBy,who:'client'};
+    m.protections=m.protections||[];m.protections.push(pr);
+    born=' Its protection now rides on the dates page.';
+  }
+  if((SH.kind==='Copy application'||SH.kind==='Certified copy')&&m.outcome&&m.outcome.appeal)
+    born=' The appeal clock recomputed from the papers.';
+  toast('On the file.'+born);
+}
+function saveOutcome(m){
+  const auto={won:'Decree in our favour',lost:'Went against us',settled:'Settled',withdrawn:'Withdrawn'};
+  const o={result:SH.res,label:(SH.olabel||'').trim()||auto[SH.res],judgmentOn:SH.jdate,recordedOn:TODAY};
+  if(SH.res==='lost'&&SH.forum!=null){
+    const f=APPEAL_FORUMS[+SH.forum];
+    o.appeal={forum:f[0],windowDays:f[1],basis:f[2],decision:'undecided'};
+  }
+  m.outcome=o;
+  toast(SH.res==='lost'?'Recorded — the appeal clock runs from the judgment date':'Result recorded');
+}
+
+/* ============================================================
+   RENDER + EVENTS + BOOT
+   ============================================================ */
 function render(){
-  route=parseHash();
+  const{c,f}=parseHash();S.center=c;S.file=f;
   hideSheet();
-  const app=$('#app');
-  app.innerHTML=({today:vToday,week:vWeek,matters:vMatters,new:vNew,close:vClose}[route.t]
-    ||((r)=>r.t==='matter'?vMatter(r.id):r.t==='party'?vParty(r.id):r.t==='day'?vDay(r.date):vToday()))(route);
-  $('#nav').innerHTML=navHTML();
-  $('#foot').innerHTML=footHTML();
-  const key=route.t+(route.id||'')+(route.date||'');
-  if(key!==lastKey)window.scrollTo(0,0);
-  lastKey=key;
+  $('#spine').innerHTML=spineHTML();
+  $('#center').innerHTML=({day:()=>vDay(S.center.date),week:vWeek,shelf:vShelf,close:vClose,new:vNew}[S.center.t]||(()=>vDay(TODAY)))();
+  const fe=$('#file');fe.innerHTML=fileHTML();fe.classList.toggle('open',!!S.file);
+  $('#phnav-in').innerHTML=phnavHTML();
+  $('#foot').innerHTML='A working sketch — a fictional Delhi practice, Wednesday 19 August 2026. Everything is invented; nothing you type leaves this page. '
+   +'<button data-act="about">About & what to try</button> · <button data-act="reset">Reset</button>';
+  const key=S.center.t+(S.center.date||'');
+  if(key!==render.lastKey){$('#center').scrollTop=0;window.scrollTo(0,0);}
+  if(S.file&&S.file.id!==render.lastFile)fe.scrollTop=0;
+  render.lastKey=key;render.lastFile=S.file&&S.file.id;
 }
 window.addEventListener('hashchange',render);
 
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;
   const act=b.dataset.act,v=b.dataset.v,id=b.dataset.id;
+  const m=id?byId(id):(SHEET&&SHEET.mid?byId(SHEET.mid):null);
   switch(act){
-    case'nav':hideSheet();setRoute('#/'+({today:'today',week:'week',matters:'matters',new:'new'})[b.dataset.t]);break;
-    case'open-matter':hideSheet();setRoute('#/m/'+id);break;
-    case'party':hideSheet();setRoute('#/p/'+id);break;
-    case'day':setRoute('#/d/'+v);break;
-    case'back':history.length>1?history.back():setRoute('#/today');break;
-    case'mtab':S.mtab=v;render();break;
-    case'mtab2':S.matterTab[id]=v;render();break;
-    case'pf':S.paperF[id]=v;render();break;
-    case'about':aboutSheet();break;
-    case'ended-info':endedSheet();break;
-    case'sheet-close':hideSheet();break;
+    case'day':setRoute({t:'day',date:v});break;
+    case'week':setRoute({t:'week'});break;
+    case'shelf':setRoute({t:'shelf'});break;
+    case'new':setRoute({t:'new'});break;
+    case'open-m':setRoute(null,{t:'m',id});break;
+    case'open-p':hideSheet();setRoute(null,{t:'p',id});break;
+    case'file-close':setRoute(null,null);break;
+    case'close-start':startClose(b.dataset.mid);setRoute({t:'close'});break;
+    case'pen':S.pen=v;render();toast(v==='munshi'?'The munshi holds the pen — entries will say so':'The advocate holds the pen');break;
+    case'about':openSheet('about');break;
     case'reset':location.reload();break;
-    case'copymsg':{const m=byId(id);const t=copyMsgText(m);
+    case'sheet-close':hideSheet();break;
+    case'mtab':S.mtab=v;render();break;
+    case'ftab':S.ftab[id]=v;render();break;
+    case'pf':S.pf[id]=v;render();break;
+    case'copymsg':{const t=copyMsgText(byId(id));
       (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(
         ()=>toast('Copied — paste it into any message'),
         ()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Copied — paste it into any message');});
       break;}
-    case'close-start':startClose(b.dataset.mid);setRoute('#/close');break;
-    case'try-date':{const el=$('#daischeck');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>el.focus(),350);}break;}
-    case'try-search':S.q='wagle';setRoute('#/matters');break;
-    case'c-out':F.out=v;render();break;
-    case'c-more-out':F.moreOut=true;render();break;
-    case'c-more-purp':F.morePurp=true;render();break;
-    case'c-purp':F.purpose=(F.purpose===v?null:v);render();break;
-    case'c-pres':F.pres=v;render();break;
-    case'c-dirwho':F.dirWho=v;render();break;
-    case'c-dir-toggle':F.dirOpen=true;render();break;
-    case'c-save':if(F.out){saveClose();render();}break;
+    /* cause-list */
+    case'cl-ok':{const h=findOpenHearing(byId(id),v);if(h)h.causeList={status:'verified'};render();toast('Checked against the cause list');break;}
+    case'cl-keep':{const h=findOpenHearing(byId(id),v);if(h)h.causeList={status:'verified',note:'diary confirmed'};render();toast('Diary stands — noted');break;}
+    case'cl-accept':{const mm=byId(id),h=findOpenHearing(mm,v);if(h){moveListing(mm,v,h.causeList.courtSays,'per the court’s cause list');render();toast('Listing moved to the court’s date — the move is on the story');}break;}
+    case'cl-mis':openSheet('clmis',id,{hon:v});break;
+    case'clmis-save':{const h=findOpenHearing(m,SHEET.hon);if(h)h.causeList={status:'mismatch',courtSays:SH.cldate};hideSheet();render();toast('Mismatch flagged — deal with it before the morning');break;}
+    /* close flow + shared hearing form */
+    case'c-out':case'h-out':F.out=v;SHEET?renderSheet():render();break;
+    case'c-more-out':case'h-more-out':F.moreOut=true;SHEET?renderSheet():render();break;
+    case'c-more-purp':case'h-more-purp':F.morePurp=true;SHEET?renderSheet():render();break;
+    case'c-purp':case'h-purp':F.purpose=(F.purpose===v?null:v);SHEET?renderSheet():render();break;
+    case'c-pres':case'h-pres':F.pres=v;SHEET?renderSheet():render();break;
+    case'c-dirwho':case'h-dirwho':F.dirWho=v;SHEET?renderSheet():render();break;
+    case'c-dir-toggle':case'h-dir-toggle':F.dirOpen=true;SHEET?renderSheet():render();break;
+    case'c-save':{if(!F.out)break;const{m:cm,h}=F.queue[F.idx];applyCloseForm(cm,h);F.idx++;resetF();render();toast('Recorded — every page is updated');break;}
     case'c-skip':F.idx++;F.skipped++;resetF();render();break;
+    /* sheets open */
+    case'sh-paper':openSheet('paper',id);SH.dt=TODAY;SH.side='us';renderSheet();break;
+    case'sh-hearing':openSheet('hearing',id);break;
+    case'sh-outcome':openSheet('outcome',id);SH.jdate=TODAY;renderSheet();break;
+    case'sh-cover':openSheet('cover',id);break;
+    case'sh-fee':openSheet('fee',id);break;
+    case'sh-move':openSheet('move',id,{hon:v});break;
+    case'sh-phone':openSheet('phone',null,{pid:id});break;
+    case'sh-limit':openSheet('limit',id);break;
+    case'sh-bundle':openSheet('bundle',id);break;
+    case'sh-appealfiled':openSheet('appealfiled',id);break;
+    /* sheet chips */
+    case'p-kind':SH.kind=v;renderSheet();break;
+    case'p-side':SH.side=v;renderSheet();break;
+    case'p-orig':SH.orig=!SH.orig;renderSheet();break;
+    case'p-prot':SH.prot=!SH.prot;renderSheet();break;
+    case'p-protmode':SH.protMode=v;renderSheet();break;
+    case'o-res':SH.res=v;renderSheet();break;
+    case'o-forum':SH.forum=v;renderSheet();break;
+    case'm-why':SH.mwhy=v;renderSheet();break;
+    case'c-complex':SH.complex=v;renderSheet();break;
     case'n-kind':N.kind=v;render();break;
     case'n-lim':N.lim=v;render();break;
+    case'b-tog':{const i=+v;const at=SH.sel.indexOf(i);if(at>=0)SH.sel.splice(at,1);else SH.sel.push(i);renderSheet();break;}
+    /* sheet saves */
+    case'paper-save':savePaper(m);hideSheet();render();break;
+    case'hearing-save':{
+      const past=SH.hdate<=TODAY;
+      const h={on:SH.hdate,purpose:(SH.hpurp||'').trim()||null,outcome:null,next:null};
+      if(past&&F.out){applyCloseForm(m,h);}
+      m.hearings=m.hearings||[];m.hearings.push(h);
+      hideSheet();render();
+      toast(past?(F.out?'Recorded — the diary, boards and dates all know':'Listed as a past hearing — close it when you know the outcome'):'Listed — it is on the boards now');break;}
+    case'outcome-save':saveOutcome(m);hideSheet();render();break;
+    case'cover-save':{
+      if(SH.caseNo!==undefined)m.caseNo=SH.caseNo.trim()||null;else if(m.caseNo===undefined)m.caseNo=null;
+      if(SH.cnr!==undefined)m.cnr=SH.cnr.trim()||null;
+      if(SH.court!==undefined)m.court=SH.court.trim()||null;
+      if(SH.complex)m.complex=SH.complex;
+      if(SH.filed!==undefined&&SH.filed)m.filedOn=SH.filed;
+      if(m.filedOn&&m.side==='pre-filing')m.side='we act for the plaintiff';
+      hideSheet();render();toast('Cover saved — findable the way the court names it');break;}
+    case'fee-save':{m.fees=m.fees||[];m.fees.push({on:SH.fdate||TODAY,amt:parseInt(SH.amt)||0,note:(SH.note||'').trim()||null});hideSheet();render();toast('Received — on the file, on the story');break;}
+    case'move-save':{moveListing(m,SHEET.hon,SH.mdate,SH.mwhy);hideSheet();render();toast('Listing moved — no blank line, and the move is on the story');break;}
+    case'phone-save':{P(SHEET.pid).phone=(SH.num||'').trim()||null;hideSheet();render();toast('Saved — every call list finds it now');break;}
+    case'limit-save':{m.limitation={state:'stated',label:SH.llabel.trim(),by:SH.ldate,basis:(SH.lbasis||'').trim()||('Stated by counsel on '+fmtDot(TODAY))};hideSheet();render();toast('The clock is set — stated, not invented');break;}
+    case'limit-met':{m.limitation.met=TODAY;render();toast('Met — the warning retires');break;}
+    case'appealfiled-save':{m.outcome.appeal.decision='filed';m.outcome.appeal.filedOn=SH.afdate||TODAY;hideSheet();render();toast('Appeal filed — the clock is answered');break;}
+    case'appeal-drop':{m.outcome.appeal.decision='dropped';render();toast('Noted — the window stays watched till it truly closes');break;}
+    case'appeal-undecide':{m.outcome.appeal.decision='undecided';render();toast('Back on the clock');break;}
+    case'dir-done':{const[hon,what]=v.split('|');
+      for(const h of m.hearings||[])for(const d of h.directions||[])
+        if(h.on===hon&&d.what===what)d.done=TODAY;
+      render();toast('Done — struck off everywhere');break;}
+    case'refile-done':{m.refile.done=TODAY;render();toast('Refiled — the clock retires');break;}
+    case'cond-met':{for(const pr of m.protections||[])if(pr.condition)pr.condition.met=TODAY;render();toast('Condition met — the protection holds');break;}
+    case'archive':{m.archived=true;
+      const org=(m.papers||[]).filter(p=>p.original).length;
+      render();toast(org?('Put away — '+org+' client original'+(org>1?'s':'')+' still in the office: return them'):'Put away — still searchable forever');break;}
+    case'b-keep':{
+      const ps=(m.papers||[]).filter(p=>p.kind!=='Bundle');
+      const pp=SH.sel.reduce((s,i)=>s+ps[i].pages,0);
+      m.papers.push({kind:'Bundle',label:'Paper-book with court-style index ('+SH.sel.length+' papers, '+pp+' pp)',dt:TODAY,pages:pp,side:'us'});
+      hideSheet();render();toast('Kept on the file — the record of what was filed');break;}
     case'n-save':if(N.client.trim()&&N.opp.trim()&&N.lim)saveNew();break;
   }
 });
 document.addEventListener('input',e=>{
   const el=e.target;
   switch(el.id){
-    case'daischeck':$('#daisout').innerHTML=el.value?clashNoteHTML(el.value):'';break;
+    case'daischeck':$('#daisout').innerHTML=el.value?clashLineHTML(el.value):'';break;
     case'msearch':{S.q=el.value;const pos=el.selectionStart;render();
       const nel=$('#msearch');if(nel){nel.focus();nel.setSelectionRange(pos,pos);}break;}
-    case'c-detail':F.detail=el.value;break;
-    case'c-next':F.next=el.value;$('#c-clash').innerHTML=F.next?clashNoteHTML(F.next,F.queue[F.idx].m.id):'';break;
-    case'c-presname':F.presName=el.value;break;
-    case'c-dirwhat':F.dirWhat=el.value;break;
-    case'c-dirby':F.dirBy=el.value;break;
-    case'n-client':{N.client=el.value;$('#n-client-conf').innerHTML=conflictHTML(N.client);syncNewBtn();break;}
-    case'n-opp':{N.opp=el.value;$('#n-opp-conf').innerHTML=conflictHTML(N.opp);syncNewBtn();break;}
+    case'c-detail':case'h-detail':F.detail=el.value;break;
+    case'c-next':F.next=el.value;$('#c-clash').innerHTML=F.next?clashLineHTML(F.next,F.queue[F.idx].m.id):'';break;
+    case'h-next':F.next=el.value;{const el2=$('#h-clash');if(el2)el2.innerHTML=F.next?clashLineHTML(F.next,SHEET.mid):'';}break;
+    case'c-presname':case'h-presname':F.presName=el.value;break;
+    case'c-dirwhat':case'h-dirwhat':F.dirWhat=el.value;break;
+    case'c-dirby':case'h-dirby':F.dirBy=el.value;break;
+    case'n-client':N.client=el.value;$('#n-client-conf').innerHTML=conflictHTML(N.client);syncBtn('n-save',N.client.trim()&&N.opp.trim()&&N.lim);break;
+    case'n-opp':N.opp=el.value;$('#n-opp-conf').innerHTML=conflictHTML(N.opp);syncBtn('n-save',N.client.trim()&&N.opp.trim()&&N.lim);break;
     case'n-limdate':N.limDate=el.value;break;
+    case'shp-label':SH.label=el.value;syncBtn('paper-save',SH.label&&SH.kind&&SH.dt);break;
+    case'shp-dt':SH.dt=el.value;syncBtn('paper-save',SH.label&&SH.kind&&SH.dt);break;
+    case'shp-pages':SH.pages=el.value;break;
+    case'shp-refile':SH.refile=el.value;break;
+    case'shp-protlabel':SH.protLabel=el.value;break;
+    case'shp-condwhat':SH.condWhat=el.value;break;
+    case'shp-condby':SH.condBy=el.value;break;
+    case'shh-date':SH.hdate=el.value;syncBtn('hearing-save',!!SH.hdate);break;
+    case'shh-purp':SH.hpurp=el.value;break;
+    case'sho-label':SH.olabel=el.value;break;
+    case'sho-jdate':SH.jdate=el.value;syncBtn('outcome-save',SH.res&&SH.jdate&&(SH.res!=='lost'||SH.forum!=null));break;
+    case'shc-caseno':SH.caseNo=el.value;break;
+    case'shc-cnr':SH.cnr=el.value;break;
+    case'shc-court':SH.court=el.value;break;
+    case'shc-filed':SH.filed=el.value;break;
+    case'shf-amt':SH.amt=el.value;syncBtn('fee-save',!!SH.amt);break;
+    case'shf-date':SH.fdate=el.value;break;
+    case'shf-note':SH.note=el.value;break;
+    case'shm-date':SH.mdate=el.value;{const c=$('#shm-clash');
+      if(c&&SH.mdate)c.innerHTML=clashLineHTML(SH.mdate,SHEET.mid);
+      else if(SH.mdate)renderSheet();}syncBtn('move-save',SH.mdate&&SH.mwhy);break;
+    case'shph-num':SH.num=el.value;break;
+    case'shl-label':SH.llabel=el.value;syncBtn('limit-save',SH.llabel&&SH.ldate);break;
+    case'shl-date':SH.ldate=el.value;syncBtn('limit-save',SH.llabel&&SH.ldate);break;
+    case'shl-basis':SH.lbasis=el.value;break;
+    case'shaf-date':SH.afdate=el.value;break;
+    case'shcl-date':SH.cldate=el.value;syncBtn('clmis-save',!!SH.cldate);break;
   }
 });
-function syncNewBtn(){
-  const btn=document.querySelector('[data-act="n-save"]');
-  if(btn)btn.disabled=!(N.client.trim()&&N.opp.trim()&&N.lim);
-}
+function syncBtn(act,ok){const b=document.querySelector('[data-act="'+act+'"]');if(b)b.disabled=!ok;}
 render();
 </script>
 </body>
